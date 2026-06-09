@@ -1,0 +1,2783 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 学习助手 — 大模型解决方案课程</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Source+Serif+4:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0F0F0F;
+  --bg-card: #1A1A1A;
+  --bg-hover: #242424;
+  --gold: #E8A838;
+  --gold-dim: rgba(232, 168, 56, 0.12);
+  --gold-glow: rgba(232, 168, 56, 0.25);
+  --text: #E8E8E8;
+  --text-dim: #999;
+  --text-muted: #666;
+  --border: #2A2A2A;
+  --green: #4ADE80;
+  --red: #F87171;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --max-width: 960px;
+  --nav-height: 56px;
+  --font-serif: "Source Serif 4", "Noto Serif SC", Georgia, serif;
+  --font-sans: "Inter", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+html { font-size: 15px; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #3A3A3A; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* ===== Top Nav ===== */
+.topnav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(15,15,15,0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  height: var(--nav-height);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.nav-inner {
+  width: 100%; max-width: var(--max-width);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+}
+
+.nav-brand {
+  font-family: var(--font-serif);
+  font-size: 1.1rem; font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.nav-tabs {
+  display: flex; gap: 4px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 3px;
+}
+
+.nav-tab {
+  font-family: var(--font-sans);
+  font-size: 0.85rem; font-weight: 500;
+  color: var(--text-dim);
+  background: transparent; border: none;
+  padding: 6px 16px; border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-tab:hover { color: var(--text); background: var(--bg-hover); }
+.nav-tab.active { color: #0F0F0F; background: var(--gold); font-weight: 600; }
+
+.nav-status {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 0.78rem; color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(74,222,128,0.5);
+  flex-shrink: 0;
+}
+
+.status-dot.offline { background: var(--red); box-shadow: 0 0 6px rgba(248,113,113,0.5); }
+
+/* ===== Main Content ===== */
+.main-content {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 32px 20px 60px;
+}
+
+/* Page visibility */
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.35s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Section Headers ===== */
+.section-title {
+  font-family: var(--font-serif);
+  font-size: 1.55rem; font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.section-subtitle {
+  font-size: 0.88rem; color: var(--text-dim);
+  margin-bottom: 24px;
+}
+
+/* ===== Cards ===== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.card:hover { border-color: #3A3A3A; }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+/* ===== Page 1: 学习（AI 对话） ===== */
+.study-toolbar {
+  display: flex; gap: 10px; align-items: center;
+  margin-bottom: 18px;
+}
+
+.study-doc-select {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-family: var(--font-sans); font-size: 0.82rem;
+  color: var(--text);
+  outline: none; cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  padding-right: 30px;
+}
+
+.study-doc-select:focus { border-color: var(--gold); }
+
+.study-new-chat {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim); font-family: var(--font-sans);
+  font-size: 0.82rem; padding: 8px 16px; border-radius: var(--radius-sm);
+  cursor: pointer; white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.study-new-chat:hover { color: var(--text); border-color: #555; }
+
+.study-page-inner {
+  display: flex; flex-direction: column;
+  min-height: calc(100vh - var(--nav-height) - 90px);
+}
+
+.study-chat {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-bottom: 16px;
+}
+
+.study-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center;
+  padding: 64px 20px; text-align: center;
+}
+
+.study-empty.hidden { display: none; }
+
+.study-empty-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--bg-card);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; margin-bottom: 16px;
+}
+
+.study-empty-title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem; font-weight: 600;
+  color: var(--text); margin-bottom: 6px;
+}
+
+.study-empty-desc {
+  font-size: 0.82rem; color: var(--text-dim); max-width: 320px;
+  line-height: 1.6;
+}
+
+.study-msg {
+  display: flex; gap: 10px;
+  margin-bottom: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.study-msg.user { flex-direction: row-reverse; }
+
+.study-msg-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
+}
+
+.study-msg.assistant .study-msg-avatar { background: #2A2A2A; color: var(--gold); }
+.study-msg.user .study-msg-avatar { background: var(--gold); color: #0F0F0F; }
+
+.study-msg-body {
+  max-width: 78%;
+  font-size: 0.88rem; line-height: 1.7;
+  padding: 14px 18px;
+}
+
+.study-msg.assistant .study-msg-body {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0 14px 14px 14px;
+  color: var(--text);
+}
+
+.study-msg.user .study-msg-body {
+  background: var(--gold-dim);
+  border: 1px solid rgba(232,168,56,0.2);
+  border-radius: 14px 0 14px 14px;
+  color: var(--text);
+}
+
+.study-msg-body strong, .study-msg-body b { color: var(--gold); font-weight: 600; }
+.study-msg-body h1,.study-msg-body h2,.study-msg-body h3,.study-msg-body h4 {
+  font-family: var(--font-serif); font-weight: 600;
+  margin: 10px 0 6px; color: var(--text); line-height: 1.4;
+}
+.study-msg-body h1 { font-size: 1.2rem; }
+.study-msg-body h2 { font-size: 1.05rem; }
+.study-msg-body h3 { font-size: 0.95rem; }
+.study-msg-body code {
+  background: #0F0F0F; color: var(--gold);
+  padding: 2px 6px; border-radius: 3px;
+  font-family: "SF Mono","Fira Code","Cascadia Code",monospace;
+  font-size: 0.82em;
+}
+.study-msg-body pre {
+  background: #0F0F0F; border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px; overflow-x: auto;
+  margin: 10px 0;
+}
+.study-msg-body pre code {
+  background: none; color: var(--text); padding: 0;
+  font-size: 0.8rem; line-height: 1.6;
+}
+.study-msg-body ul, .study-msg-body ol {
+  padding-left: 20px; margin: 8px 0;
+}
+.study-msg-body li { margin-bottom: 4px; }
+.study-msg-body p { margin: 6px 0; }
+.study-msg-body p:first-child { margin-top: 0; }
+.study-msg-body p:last-child { margin-bottom: 0; }
+
+.study-sources-toggle {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 8px;
+  font-size: 0.75rem; color: var(--text-dim);
+  cursor: pointer; user-select: none;
+  transition: color 0.15s;
+}
+
+.study-sources-toggle:hover { color: var(--gold); }
+
+.study-sources-toggle .arrow {
+  display: inline-block; transition: transform 0.2s;
+  font-size: 0.65rem;
+}
+
+.study-sources-toggle.open .arrow { transform: rotate(90deg); }
+
+.study-sources-list {
+  display: none;
+  margin-top: 8px;
+  border-left: 2px solid var(--gold);
+  padding-left: 14px;
+  font-size: 0.78rem; color: var(--text-dim);
+}
+
+.study-sources-list.open { display: block; }
+
+.study-source-item {
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  line-height: 1.5;
+}
+
+.study-source-item:last-child { border-bottom: none; }
+
+.study-source-name {
+  font-size: 0.7rem; color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.study-loading {
+  display: flex; gap: 5px; padding: 14px 18px;
+}
+
+.study-loading span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--text-muted);
+  animation: dotBounce 1.4s ease-in-out infinite both;
+}
+
+.study-loading span:nth-child(1) { animation-delay: 0s; }
+.study-loading span:nth-child(2) { animation-delay: 0.16s; }
+.study-loading span:nth-child(3) { animation-delay: 0.32s; }
+
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+  40% { transform: scale(1); opacity: 1; background: var(--gold); }
+}
+
+.study-input-wrap {
+  display: flex; gap: 10px; align-items: flex-end;
+}
+
+.study-input {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-family: var(--font-sans); font-size: 0.88rem;
+  color: var(--text);
+  outline: none; resize: none;
+  max-height: 120px; line-height: 1.55;
+  transition: border-color 0.2s;
+}
+
+.study-input:focus { border-color: var(--gold); }
+.study-input::placeholder { color: var(--text-muted); }
+
+.study-send {
+  background: var(--gold);
+  color: #0F0F0F;
+  border: none; border-radius: var(--radius);
+  padding: 10px 18px;
+  font-family: var(--font-sans); font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+  transition: opacity 0.2s, transform 0.15s;
+  height: 42px;
+}
+
+.study-send:hover:not(:disabled) { opacity: 0.88; }
+.study-send:active:not(:disabled) { transform: scale(0.96); }
+.study-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.study-suggestions {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-top: 12px;
+}
+
+.study-suggestion {
+  font-size: 0.76rem; color: var(--gold);
+  background: var(--gold-dim);
+  border: 1px solid rgba(232,168,56,0.12);
+  border-radius: 18px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.study-suggestion:hover { background: rgba(232,168,56,0.22); border-color: rgba(232,168,56,0.35); }
+/* ===== Page 2: 资料库 ===== */
+.lib-upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.lib-upload-zone:hover,
+.lib-upload-zone.dragover {
+  border-color: var(--gold);
+  background: rgba(232,168,56,0.06);
+}
+
+.lib-upload-icon {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  display: block;
+  transition: transform 0.2s;
+}
+
+.lib-upload-zone:hover .lib-upload-icon,
+.lib-upload-zone.dragover .lib-upload-icon {
+  transform: translateY(-2px);
+}
+
+.lib-upload-text {
+  font-size: 0.9rem; color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+.lib-upload-hint {
+  font-size: 0.75rem; color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.lib-format-badges {
+  display: flex; justify-content: center; gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lib-format-badge {
+  font-size: 0.7rem; font-weight: 500;
+  padding: 3px 10px; border-radius: 12px;
+  background: var(--bg-hover);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+
+/* Doc list */
+.lib-doc-list {
+  display: flex; flex-direction: column; gap: 1px;
+}
+
+.lib-doc-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s, background 0.2s;
+  margin-bottom: 6px;
+}
+
+.lib-doc-row:hover { border-color: #3A3A3A; }
+
+.lib-doc-icon {
+  width: 40px; height: 40px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; font-weight: 700;
+  flex-shrink: 0;
+}
+
+.lib-doc-icon.pdf  { background: rgba(239,68,68,0.14);  color: #F87171; }
+.lib-doc-icon.pptx { background: rgba(245,158,11,0.14); color: #FBBF24; }
+.lib-doc-icon.docx { background: rgba(59,130,246,0.14); color: #60A5FA; }
+.lib-doc-icon.md   { background: rgba(139,92,246,0.14); color: #A78BFA; }
+.lib-doc-icon.txt  { background: rgba(156,163,175,0.14); color: #9CA3AF; }
+
+.lib-doc-info {
+  flex: 1; min-width: 0;
+}
+
+.lib-doc-name {
+  font-size: 0.85rem; font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.lib-doc-meta {
+  font-size: 0.72rem; color: var(--text-dim);
+  display: flex; gap: 10px;
+}
+
+.lib-doc-status {
+  font-size: 0.7rem; font-weight: 600;
+  padding: 3px 10px; border-radius: 10px;
+  white-space: nowrap; flex-shrink: 0;
+}
+
+.lib-doc-status.parsed   { background: rgba(74,222,128,0.12); color: var(--green); }
+.lib-doc-status.pending  { background: rgba(232,168,56,0.12);  color: var(--gold); }
+.lib-doc-status.failed   { background: rgba(248,113,113,0.12); color: var(--red); }
+
+.lib-doc-actions {
+  display: flex; gap: 6px; flex-shrink: 0;
+}
+
+.lib-doc-btn {
+  font-size: 0.72rem;
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim); border-radius: var(--radius-sm);
+  padding: 4px 10px; cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lib-doc-btn:hover { color: var(--text); border-color: #555; }
+.lib-doc-btn.danger:hover { color: var(--red); border-color: rgba(248,113,113,0.4); background: rgba(248,113,113,0.08); }
+
+/* Toast */
+.lib-toast-container {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+.lib-toast {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  font-size: 0.82rem; color: var(--text);
+  max-width: 360px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 3s forwards;
+  display: flex; align-items: center; gap: 10px;
+}
+
+.lib-toast.success { border-left: 3px solid var(--green); }
+.lib-toast.error   { border-left: 3px solid var(--red); }
+.lib-toast.info    { border-left: 3px solid var(--gold); }
+
+.lib-toast-icon { font-size: 1rem; flex-shrink: 0; }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(40px); }
+}
+/* ===== Page 3: 测评 ===== */
+.qz-stages { position: relative; }
+
+.qz-stage { display: none; }
+.qz-stage.active { display: block; animation: fadeIn 0.35s ease; }
+
+/* Stage 1: Setup */
+.qz-setup-card {
+  max-width: 480px; margin: 40px auto 0;
+  padding: 36px 32px;
+  text-align: center;
+}
+
+.qz-setup-card .section-title { margin-bottom: 20px; }
+
+.qz-setup-field {
+  margin-bottom: 22px; text-align: left;
+}
+
+.qz-setup-label {
+  display: block; font-size: 0.8rem; font-weight: 500;
+  color: var(--text-dim); margin-bottom: 8px;
+}
+
+.qz-doc-select {
+  width: 100%;
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: var(--font-sans); font-size: 0.85rem;
+  color: var(--text); outline: none; cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+  padding-right: 34px;
+}
+
+.qz-doc-select:focus { border-color: var(--gold); }
+
+.qz-count-options {
+  display: flex; gap: 8px;
+}
+
+.qz-count-btn {
+  flex: 1;
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 0;
+  font-family: var(--font-sans); font-size: 0.85rem; font-weight: 500;
+  color: var(--text-dim); cursor: pointer;
+  transition: all 0.2s;
+}
+
+.qz-count-btn:hover { color: var(--text); border-color: #555; }
+.qz-count-btn.selected { border-color: var(--gold); background: var(--gold-dim); color: var(--gold); }
+
+.qz-start-btn {
+  width: 100%;
+  background: var(--gold);
+  color: #0F0F0F;
+  border: none; border-radius: var(--radius);
+  padding: 12px 0;
+  font-family: var(--font-sans); font-size: 0.9rem; font-weight: 600;
+  cursor: pointer; margin-top: 8px;
+  transition: opacity 0.2s;
+}
+
+.qz-start-btn:hover:not(:disabled) { opacity: 0.88; }
+.qz-start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Stage 2: Taking */
+.qz-info-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  margin-bottom: 18px;
+  flex-wrap: wrap; gap: 10px;
+}
+
+.qz-info-doc {
+  font-size: 0.82rem; color: var(--text-dim);
+  max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.qz-info-progress {
+  font-size: 0.85rem; font-weight: 600;
+  color: var(--text);
+}
+
+.qz-info-timer {
+  font-size: 0.85rem; font-weight: 600; font-variant-numeric: tabular-nums;
+  color: var(--gold);
+}
+
+.qz-info-timer.warning { color: var(--red); animation: pulse 1s ease-in-out infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.qz-question-card {
+  margin-bottom: 16px;
+}
+
+.qz-q-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px; flex-wrap: wrap;
+}
+
+.qz-q-number {
+  font-family: var(--font-serif); font-size: 1rem; font-weight: 700;
+  color: var(--text); white-space: nowrap;
+}
+
+.qz-q-tags {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+
+.qz-q-tag {
+  font-size: 0.68rem; font-weight: 600;
+  padding: 2px 8px; border-radius: 4px;
+  white-space: nowrap;
+}
+
+.qz-q-tag.easy   { background: rgba(74,222,128,0.14); color: var(--green); }
+.qz-q-tag.medium { background: var(--gold-dim); color: var(--gold); }
+.qz-q-tag.hard   { background: rgba(248,113,113,0.14); color: var(--red); }
+.qz-q-tag.topic  { background: rgba(59,130,246,0.12); color: #60A5FA; }
+.qz-q-tag.type   { background: rgba(139,92,246,0.12); color: #A78BFA; }
+
+.qz-q-text {
+  font-family: var(--font-serif);
+  font-size: 0.98rem; font-weight: 500;
+  line-height: 1.7; margin-bottom: 16px;
+  color: var(--text);
+}
+
+/* Choice options */
+.qz-options {
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+.qz-option-card {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.qz-option-card:hover { border-color: #555; }
+.qz-option-card.selected { border-color: var(--gold); background: var(--gold-dim); }
+
+.qz-option-letter {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 700; flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.qz-option-card.selected .qz-option-letter {
+  background: var(--gold); color: #0F0F0F; border-color: var(--gold);
+}
+
+.qz-option-text { font-size: 0.85rem; flex: 1; }
+
+/* True/False */
+.qz-tf-options {
+  display: flex; gap: 10px;
+}
+
+.qz-tf-btn {
+  flex: 1;
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 0;
+  font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500;
+  color: var(--text-dim); cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.qz-tf-btn:hover { border-color: #555; }
+.qz-tf-btn.selected { border-color: var(--gold); background: var(--gold-dim); color: var(--gold); }
+
+/* Short answer */
+.qz-textarea {
+  width: 100%;
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-family: var(--font-sans); font-size: 0.85rem;
+  color: var(--text);
+  outline: none; resize: vertical;
+  min-height: 80px; line-height: 1.6;
+}
+
+.qz-textarea:focus { border-color: var(--gold); }
+
+/* Footer actions */
+.qz-footer {
+  display: flex; gap: 10px; justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.qz-footer-btn {
+  padding: 9px 22px; border-radius: var(--radius-sm);
+  font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+}
+
+.qz-btn-cancel {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim);
+}
+
+.qz-btn-cancel:hover { color: var(--red); border-color: rgba(248,113,113,0.3); }
+
+.qz-btn-submit {
+  background: var(--gold); border: none;
+  color: #0F0F0F; font-weight: 600;
+}
+
+.qz-btn-submit:hover { opacity: 0.88; }
+.qz-btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Stage 3: Result */
+.qz-result-card {
+  max-width: 560px; margin: 20px auto 0;
+  padding: 36px 32px; text-align: center;
+}
+
+.qz-ring-wrap {
+  position: relative;
+  width: 140px; height: 140px;
+  margin: 0 auto 24px;
+}
+
+.qz-ring-svg {
+  transform: rotate(-90deg);
+}
+
+.qz-ring-bg {
+  fill: none; stroke: var(--bg-hover);
+  stroke-width: 8;
+}
+
+.qz-ring-fill {
+  fill: none; stroke: var(--gold);
+  stroke-width: 8; stroke-linecap: round;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.qz-ring-score {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+
+.qz-ring-value {
+  font-family: var(--font-serif);
+  font-size: 2.2rem; font-weight: 700;
+  color: var(--gold); line-height: 1;
+}
+
+.qz-ring-label {
+  font-size: 0.72rem; color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.qz-result-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 10px; margin: 24px 0;
+}
+
+.qz-rstat { text-align: center; }
+.qz-rstat-val { font-family: var(--font-serif); font-size: 1.3rem; font-weight: 600; color: var(--text); }
+.qz-rstat-label { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
+.qz-rstat.good .qz-rstat-val { color: var(--green); }
+.qz-rstat.bad  .qz-rstat-val { color: var(--red); }
+
+.qz-grade {
+  display: inline-block;
+  font-family: var(--font-serif); font-size: 1rem; font-weight: 700;
+  padding: 4px 18px; border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.qz-grade.a { background: rgba(74,222,128,0.14); color: var(--green); }
+.qz-grade.b { background: rgba(59,130,246,0.14); color: #60A5FA; }
+.qz-grade.c { background: var(--gold-dim); color: var(--gold); }
+.qz-grade.d { background: rgba(248,113,113,0.14); color: var(--red); }
+
+.qz-review-title {
+  font-family: var(--font-serif); font-size: 1rem; font-weight: 600;
+  text-align: left; margin-bottom: 14px;
+}
+
+.qz-review-item {
+  text-align: left; margin-bottom: 14px;
+}
+
+.qz-review-q {
+  font-size: 0.85rem; font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.qz-review-answer {
+  font-size: 0.8rem; padding: 8px 14px; border-radius: var(--radius-sm);
+  margin-bottom: 4px;
+}
+
+.qz-review-answer.correct { background: rgba(74,222,128,0.08); color: var(--green); border: 1px solid rgba(74,222,128,0.15); }
+.qz-review-answer.wrong   { background: rgba(248,113,113,0.08); color: var(--red); border: 1px solid rgba(248,113,113,0.15); }
+.qz-review-answer.neutral { background: rgba(156,163,175,0.08); color: var(--text-dim); }
+
+.qz-review-feedback {
+  font-size: 0.78rem; color: var(--text-dim);
+  line-height: 1.6; margin-top: 6px;
+  padding-left: 14px;
+  border-left: 2px solid var(--border);
+}
+
+/* Quiz history */
+.qz-history {
+  margin-top: 40px;
+}
+
+.qz-history-title {
+  font-family: var(--font-serif); font-size: 1rem; font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.qz-history-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.qz-history-item:last-child { border-bottom: none; }
+
+.qz-history-doc {
+  flex: 1; min-width: 0;
+  font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.qz-history-date {
+  font-size: 0.72rem; color: var(--text-muted);
+  white-space: nowrap; width: 80px;
+}
+
+.qz-history-score {
+  font-weight: 700; font-size: 0.85rem;
+  white-space: nowrap; width: 44px; text-align: right;
+}
+
+.qz-history-score.high   { color: var(--green); }
+.qz-history-score.medium { color: var(--gold); }
+.qz-history-score.low    { color: var(--red); }
+
+.qz-retry-btn {
+  background: transparent; border: 1px solid var(--gold);
+  color: var(--gold); border-radius: var(--radius);
+  padding: 8px 24px; font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+  margin-top: 16px;
+}
+
+.qz-retry-btn:hover { background: var(--gold-dim); }
+/* ===== Page 4: 进度 ===== */
+/* ===== Page 4: 进度 ===== */
+.pg-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.pg-stat-card {
+  padding: 18px 20px;
+}
+
+.pg-stat-value {
+  font-family: var(--font-serif);
+  font-size: 2rem; font-weight: 700;
+  color: var(--gold); line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.pg-stat-label {
+  font-size: 0.7rem; font-weight: 500;
+  color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+
+/* Radar section */
+.pg-radar-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.pg-radar-chart {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  height: 340px;
+}
+
+.pg-knowledge-list {
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.pg-knowledge-item {
+  padding: 12px 16px;
+}
+
+.pg-kw-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 6px;
+}
+
+.pg-kw-name {
+  font-size: 0.82rem; font-weight: 500;
+}
+
+.pg-kw-pct {
+  font-size: 0.78rem; font-weight: 600;
+  color: var(--text-dim); font-variant-numeric: tabular-nums;
+}
+
+.pg-kw-bar {
+  height: 6px; background: var(--bg-hover);
+  border-radius: 3px; overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.pg-kw-bar-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.pg-kw-bar-fill.high   { background: var(--green); }
+.pg-kw-bar-fill.medium { background: var(--gold); }
+.pg-kw-bar-fill.low    { background: var(--red); }
+
+.pg-kw-level {
+  display: inline-block;
+  font-size: 0.65rem; font-weight: 600;
+  padding: 2px 7px; border-radius: 8px;
+}
+
+.pg-kw-level.high   { background: rgba(74,222,128,0.12); color: var(--green); }
+.pg-kw-level.medium { background: var(--gold-dim); color: var(--gold); }
+.pg-kw-level.low    { background: rgba(248,113,113,0.12); color: var(--red); }
+
+/* Doc progress list */
+.pg-doc-section-title {
+  font-family: var(--font-serif); font-size: 1rem; font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.pg-doc-list {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 28px;
+}
+
+.pg-doc-card {
+  padding: 16px 18px;
+}
+
+.pg-doc-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 10px; flex-wrap: wrap;
+}
+
+.pg-doc-name {
+  font-size: 0.85rem; font-weight: 500;
+  flex: 1; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.pg-doc-status {
+  font-size: 0.68rem; font-weight: 600;
+  padding: 3px 10px; border-radius: 10px;
+  white-space: nowrap;
+}
+
+.pg-doc-status.done   { background: rgba(74,222,128,0.12); color: var(--green); }
+.pg-doc-status.active { background: rgba(59,130,246,0.12); color: #60A5FA; }
+.pg-doc-status.idle   { background: rgba(156,163,175,0.12); color: #9CA3AF; }
+
+.pg-doc-bar {
+  height: 5px; background: var(--bg-hover);
+  border-radius: 3px; overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.pg-doc-bar-fill {
+  height: 100%; background: var(--gold);
+  border-radius: 3px; transition: width 0.6s ease;
+}
+
+.pg-doc-scores {
+  display: flex; gap: 16px;
+  font-size: 0.72rem; color: var(--text-dim);
+  margin-bottom: 10px; flex-wrap: wrap;
+}
+
+.pg-doc-scores span { white-space: nowrap; }
+
+.pg-doc-summary {
+  font-size: 0.76rem; color: var(--text-dim);
+  line-height: 1.5; margin-bottom: 10px;
+  padding-left: 12px;
+  border-left: 2px solid var(--border);
+}
+
+.pg-doc-notes {
+  margin-bottom: 8px;
+}
+
+.pg-notes-textarea {
+  width: 100%;
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: var(--font-sans); font-size: 0.8rem;
+  color: var(--text);
+  outline: none; resize: vertical;
+  min-height: 54px; line-height: 1.55;
+}
+
+.pg-notes-textarea:focus { border-color: var(--gold); }
+
+.pg-notes-saved {
+  font-size: 0.68rem; color: var(--green);
+  margin-top: 4px;
+  opacity: 0; transition: opacity 0.3s;
+}
+
+.pg-notes-saved.visible { opacity: 1; }
+
+.pg-doc-footer {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+
+.pg-status-select {
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  font-family: var(--font-sans); font-size: 0.75rem;
+  color: var(--text); outline: none; cursor: pointer;
+}
+
+.pg-status-select:focus { border-color: var(--gold); }
+
+.pg-save-btn {
+  background: var(--gold);
+  color: #0F0F0F;
+  border: none; border-radius: var(--radius-sm);
+  padding: 5px 14px;
+  font-family: var(--font-sans); font-size: 0.75rem; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s;
+}
+
+.pg-save-btn:hover { opacity: 0.85; }
+
+/* Weak points */
+.pg-weak-section-title {
+  font-family: var(--font-serif); font-size: 1rem; font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.pg-weak-list {
+  display: flex; flex-direction: column; gap: 6px;
+}
+
+.pg-weak-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+}
+
+.pg-weak-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 6px var(--gold-glow);
+  flex-shrink: 0;
+}
+
+.pg-weak-name {
+  flex: 1; font-size: 0.82rem; font-weight: 500;
+}
+
+.pg-weak-rate {
+  font-size: 0.78rem; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.pg-weak-rate.bad  { color: var(--red); }
+.pg-weak-rate.warn { color: var(--gold); }
+
+/* ===== Page 5: 报告 ===== */
+.rp-generate-area {
+  max-width: 560px; margin: 0 auto 28px;
+  padding: 24px 28px;
+}
+
+.rp-type-options {
+  display: flex; gap: 8px;
+  margin-bottom: 16px;
+}
+
+.rp-type-btn {
+  flex: 1;
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 0;
+  font-family: var(--font-sans); font-size: 0.85rem; font-weight: 500;
+  color: var(--text-dim); cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.rp-type-btn:hover { color: var(--text); border-color: #555; }
+.rp-type-btn.selected { border-color: var(--gold); background: var(--gold-dim); color: var(--gold); }
+
+.rp-date-range {
+  display: flex; gap: 10px; align-items: center;
+  margin-bottom: 16px;
+}
+
+.rp-date-range.hidden { display: none; }
+
+.rp-date-input {
+  flex: 1;
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-family: var(--font-sans); font-size: 0.82rem;
+  color: var(--text); outline: none;
+  color-scheme: dark;
+}
+
+.rp-date-input:focus { border-color: var(--gold); }
+.rp-date-input::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
+
+.rp-date-sep {
+  font-size: 0.8rem; color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.rp-generate-btn {
+  width: 100%;
+  background: var(--gold);
+  color: #0F0F0F;
+  border: none; border-radius: var(--radius);
+  padding: 11px 0;
+  font-family: var(--font-sans); font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s;
+}
+
+.rp-generate-btn:hover:not(:disabled) { opacity: 0.88; }
+.rp-generate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Report content */
+.rp-content-area {
+  max-width: 760px; margin: 0 auto 28px;
+}
+
+.rp-content-area.hidden { display: none; }
+
+.rp-content {
+  padding: 28px 32px;
+  line-height: 1.75;
+}
+
+.rp-content h1 {
+  font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700;
+  color: var(--gold); margin: 20px 0 10px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+
+.rp-content h2 {
+  font-family: var(--font-serif); font-size: 1.1rem; font-weight: 600;
+  color: var(--gold); margin: 18px 0 8px;
+}
+
+.rp-content h3 {
+  font-family: var(--font-serif); font-size: 0.95rem; font-weight: 600;
+  color: var(--text); margin: 14px 0 6px;
+}
+
+.rp-content p {
+  margin: 8px 0; font-size: 0.88rem;
+}
+
+.rp-content strong, .rp-content b { color: var(--gold); }
+
+.rp-content table {
+  width: 100%; border-collapse: collapse;
+  margin: 14px 0; font-size: 0.82rem;
+}
+
+.rp-content th {
+  background: var(--bg-hover);
+  color: var(--gold); font-weight: 600;
+  padding: 10px 14px; text-align: left;
+  border-bottom: 2px solid var(--border);
+}
+
+.rp-content td {
+  padding: 9px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.rp-content tr:hover td { background: rgba(255,255,255,0.02); }
+
+.rp-content ul, .rp-content ol {
+  padding-left: 22px; margin: 10px 0;
+}
+
+.rp-content li {
+  font-size: 0.85rem; margin-bottom: 4px;
+}
+
+.rp-content code {
+  background: #0F0F0F; color: var(--gold);
+  padding: 2px 6px; border-radius: 3px;
+  font-family: "SF Mono",monospace; font-size: 0.82em;
+}
+
+/* Download */
+.rp-download-bar {
+  display: flex; justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.rp-download-btn {
+  background: transparent; border: 1px solid var(--gold);
+  color: var(--gold); border-radius: var(--radius-sm);
+  padding: 7px 18px;
+  font-family: var(--font-sans); font-size: 0.8rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+}
+
+.rp-download-btn:hover { background: var(--gold-dim); }
+
+/* History */
+.rp-history {
+  max-width: 760px; margin: 0 auto;
+}
+
+.rp-history-title {
+  font-family: var(--font-serif); font-size: 1rem; font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.rp-history-list {
+  display: flex; flex-direction: column; gap: 1px;
+}
+
+.rp-history-item {
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  display: flex; align-items: center; gap: 14px;
+}
+
+.rp-history-item:hover { border-color: #444; }
+
+.rp-history-range {
+  flex: 1; font-size: 0.84rem; font-weight: 500;
+}
+
+.rp-history-date {
+  font-size: 0.72rem; color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.rp-history-arrow {
+  font-size: 0.65rem; color: var(--text-muted);
+  transition: transform 0.2s;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 680px) {
+  .nav-inner { flex-wrap: wrap; gap: 8px; padding: 6px 12px; }
+  .nav-tabs { order: 3; width: 100%; justify-content: center; }
+  .nav-tab { font-size: 0.78rem; padding: 5px 10px; }
+  .pg-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .pg-radar-section { grid-template-columns: 1fr; }
+  .rp-generate-area { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Top Navigation ===== -->
+<nav class="topnav">
+  <div class="nav-inner">
+    <span class="nav-brand">AI 学习助手</span>
+    <div class="nav-tabs" id="navTabs">
+      <button class="nav-tab active" data-page="study">学习</button>
+      <button class="nav-tab" data-page="library">资料库</button>
+      <button class="nav-tab" data-page="quiz">测评</button>
+      <button class="nav-tab" data-page="progress">进度</button>
+      <button class="nav-tab" data-page="report">报告</button>
+    </div>
+    <div class="nav-status">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">已连接</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== Main Content ===== -->
+<div class="main-content">
+
+  <!-- Page 1: 学习 - AI 对话 -->
+  <div class="page active" id="page-study">
+    <div class="study-page-inner">
+      <div class="study-toolbar">
+        <select class="study-doc-select" id="studyDocSelect">
+          <option value="">全部资料</option>
+          <option value="doc1">大模型技术架构概述.pdf</option>
+          <option value="doc2">LLM 训练方法与实践.md</option>
+          <option value="doc3">企业级 RAG 落地实践.pptx</option>
+          <option value="doc4">Agent 开发框架对比.pdf</option>
+        </select>
+        <button class="study-new-chat" id="studyNewChat">+ 新对话</button>
+      </div>
+
+      <div class="study-chat" id="studyChat">
+        <div class="study-empty" id="studyEmpty">
+          <div class="study-empty-icon">💬</div>
+          <div class="study-empty-title">开始智能问答</div>
+          <div class="study-empty-desc">选择一份资料，或直接输入问题。AI 将基于你的学习资料为你深度解答。</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="study-input-wrap">
+          <textarea class="study-input" id="studyInput" rows="1" placeholder="输入你的问题…… Shift+Enter 换行，Enter 发送"></textarea>
+          <button class="study-send" id="studySend">发送</button>
+        </div>
+        <div class="study-suggestions" id="studySuggestions">
+          <span class="study-suggestion">什么是 RAG 架构？</span>
+          <span class="study-suggestion">LoRA 微调的原理</span>
+          <span class="study-suggestion">Prompt Engineering 最佳实践</span>
+          <span class="study-suggestion">Agent 与 Chain 的区别</span>
+          <span class="study-suggestion">如何评估大模型性能？</span>
+          <span class="study-suggestion">向量数据库选型建议</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Page 2: 资料库 -->
+  <div class="page" id="page-library">
+    <h2 class="section-title">资料库</h2>
+    <p class="section-subtitle">管理你的学习文档，支持 PDF、PPTX、DOCX、Markdown、TXT</p>
+
+    <div class="lib-upload-zone" id="libUploadZone">
+      <span class="lib-upload-icon">📂</span>
+      <div class="lib-upload-text">拖拽文件到此处上传，或点击选择文件</div>
+      <div class="lib-upload-hint">单个文件不超过 50MB</div>
+      <div class="lib-format-badges">
+        <span class="lib-format-badge">PDF</span>
+        <span class="lib-format-badge">PPTX</span>
+        <span class="lib-format-badge">DOCX</span>
+        <span class="lib-format-badge">MD</span>
+        <span class="lib-format-badge">TXT</span>
+      </div>
+      <input type="file" id="libFileInput" accept=".pdf,.pptx,.docx,.md,.txt" style="display:none" multiple />
+    </div>
+
+    <div class="lib-doc-list" id="libDocList">
+      <div class="lib-doc-row">
+        <div class="lib-doc-icon pdf">PDF</div>
+        <div class="lib-doc-info">
+          <div class="lib-doc-name">大模型技术架构概述.pdf</div>
+          <div class="lib-doc-meta"><span>2.4 MB</span><span>5 月 28 日</span></div>
+        </div>
+        <span class="lib-doc-status parsed">已解析</span>
+        <div class="lib-doc-actions">
+          <button class="lib-doc-btn danger">删除</button>
+        </div>
+      </div>
+      <div class="lib-doc-row">
+        <div class="lib-doc-icon md">MD</div>
+        <div class="lib-doc-info">
+          <div class="lib-doc-name">LLM 训练方法与实践.md</div>
+          <div class="lib-doc-meta"><span>186 KB</span><span>5 月 27 日</span></div>
+        </div>
+        <span class="lib-doc-status parsed">已解析</span>
+        <div class="lib-doc-actions">
+          <button class="lib-doc-btn danger">删除</button>
+        </div>
+      </div>
+      <div class="lib-doc-row">
+        <div class="lib-doc-icon pptx">PPTX</div>
+        <div class="lib-doc-info">
+          <div class="lib-doc-name">企业级 RAG 落地实践.pptx</div>
+          <div class="lib-doc-meta"><span>8.1 MB</span><span>5 月 26 日</span></div>
+        </div>
+        <span class="lib-doc-status pending">待处理</span>
+        <div class="lib-doc-actions">
+          <button class="lib-doc-btn danger">删除</button>
+        </div>
+      </div>
+      <div class="lib-doc-row">
+        <div class="lib-doc-icon pdf">PDF</div>
+        <div class="lib-doc-info">
+          <div class="lib-doc-name">Agent 开发框架对比.pdf</div>
+          <div class="lib-doc-meta"><span>1.7 MB</span><span>5 月 25 日</span></div>
+        </div>
+        <span class="lib-doc-status failed">失败</span>
+        <div class="lib-doc-actions">
+          <button class="lib-doc-btn" data-action="retry">重试</button>
+          <button class="lib-doc-btn danger">删除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page 3: 测评 -->
+  <div class="page" id="page-quiz">
+    <div class="qz-stages">
+
+      <!-- Stage 1: Setup -->
+      <div class="qz-stage active" id="qzStageSetup">
+        <div class="card qz-setup-card">
+          <h2 class="section-title">知识测评</h2>
+          <div class="qz-setup-field">
+            <label class="qz-setup-label">选择文档</label>
+            <select class="qz-doc-select" id="qzDocSelect">
+              <option value="">全部资料</option>
+              <option value="doc1">大模型技术架构概述.pdf</option>
+              <option value="doc2">LLM 训练方法与实践.md</option>
+              <option value="doc3">企业级 RAG 落地实践.pptx</option>
+              <option value="doc4">Agent 开发框架对比.pdf</option>
+            </select>
+          </div>
+          <div class="qz-setup-field">
+            <label class="qz-setup-label">题目数量</label>
+            <div class="qz-count-options" id="qzCountOptions">
+              <button class="qz-count-btn" data-count="5">5 题</button>
+              <button class="qz-count-btn selected" data-count="8">8 题</button>
+              <button class="qz-count-btn" data-count="10">10 题</button>
+              <button class="qz-count-btn" data-count="15">15 题</button>
+            </div>
+          </div>
+          <button class="qz-start-btn" id="qzStartBtn">开始测评</button>
+        </div>
+      </div>
+
+      <!-- Stage 2: Taking -->
+      <div class="qz-stage" id="qzStageTaking">
+        <div class="qz-info-bar">
+          <span class="qz-info-doc" id="qzInfoDoc">大模型技术架构概述.pdf</span>
+          <span class="qz-info-progress" id="qzInfoProgress">第 1/8 题</span>
+          <span class="qz-info-timer" id="qzInfoTimer">00:00</span>
+        </div>
+        <div id="qzQuestionArea"></div>
+        <div class="qz-footer">
+          <button class="qz-footer-btn qz-btn-cancel" id="qzBtnCancel">放弃测评</button>
+          <button class="qz-footer-btn qz-btn-submit" id="qzBtnSubmit">提交答卷</button>
+        </div>
+      </div>
+
+      <!-- Stage 3: Result -->
+      <div class="qz-stage" id="qzStageResult">
+        <div class="card qz-result-card">
+          <div class="qz-ring-wrap">
+            <svg class="qz-ring-svg" width="140" height="140" viewBox="0 0 140 140">
+              <circle class="qz-ring-bg" cx="70" cy="70" r="60"/>
+              <circle class="qz-ring-fill" id="qzRingFill" cx="70" cy="70" r="60"
+                stroke-dasharray="376.99" stroke-dashoffset="376.99"/>
+            </svg>
+            <div class="qz-ring-score">
+              <span class="qz-ring-value" id="qzRingValue">0</span>
+              <span class="qz-ring-label">分</span>
+            </div>
+          </div>
+          <div class="qz-grade" id="qzGrade">-</div>
+          <div class="qz-result-stats">
+            <div class="qz-rstat good">
+              <div class="qz-rstat-val" id="qzStatCorrect">0</div>
+              <div class="qz-rstat-label">答对</div>
+            </div>
+            <div class="qz-rstat bad">
+              <div class="qz-rstat-val" id="qzStatWrong">0</div>
+              <div class="qz-rstat-label">答错</div>
+            </div>
+            <div class="qz-rstat">
+              <div class="qz-rstat-val" id="qzStatTime">00:00</div>
+              <div class="qz-rstat-label">用时</div>
+            </div>
+            <div class="qz-rstat">
+              <div class="qz-rstat-val" id="qzStatTotal">0</div>
+              <div class="qz-rstat-label">总题数</div>
+            </div>
+          </div>
+          <h3 class="qz-review-title">逐题详情</h3>
+          <div id="qzReviewArea"></div>
+          <button class="qz-retry-btn" id="qzRetryBtn">再来一次</button>
+        </div>
+
+        <!-- Quiz History -->
+        <div class="qz-history">
+          <h3 class="qz-history-title">测评历史</h3>
+          <div class="card">
+            <div class="qz-history-item">
+              <span class="qz-history-doc">大模型技术架构概述.pdf</span>
+              <span class="qz-history-date">5 月 30 日</span>
+              <span class="qz-history-score high">92</span>
+            </div>
+            <div class="qz-history-item">
+              <span class="qz-history-doc">LLM 训练方法与实践.md</span>
+              <span class="qz-history-date">5 月 28 日</span>
+              <span class="qz-history-score medium">75</span>
+            </div>
+            <div class="qz-history-item">
+              <span class="qz-history-doc">Agent 开发框架对比.pdf</span>
+              <span class="qz-history-date">5 月 25 日</span>
+              <span class="qz-history-score low">48</span>
+            </div>
+            <div class="qz-history-item">
+              <span class="qz-history-doc">企业级 RAG 落地实践.pptx</span>
+              <span class="qz-history-date">5 月 22 日</span>
+              <span class="qz-history-score high">88</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- Page 4: 进度 -->
+  <div class="page" id="page-progress">
+    <h2 class="section-title">学习进度</h2>
+    <p class="section-subtitle">追踪学习轨迹，量化每一分进步</p>
+
+    <!-- Stats Grid -->
+    <div class="pg-stats-grid">
+      <div class="card pg-stat-card">
+        <div class="pg-stat-value">23</div>
+        <div class="pg-stat-label">资料总数</div>
+      </div>
+      <div class="card pg-stat-card">
+        <div class="pg-stat-value">16</div>
+        <div class="pg-stat-label">已掌握</div>
+      </div>
+      <div class="card pg-stat-card">
+        <div class="pg-stat-value">5</div>
+        <div class="pg-stat-label">学习中</div>
+      </div>
+      <div class="card pg-stat-card">
+        <div class="pg-stat-value">38</div>
+        <div class="pg-stat-label">测评次数</div>
+      </div>
+      <div class="card pg-stat-card">
+        <div class="pg-stat-value">82<span style="font-size:1rem;font-weight:500">%</span></div>
+        <div class="pg-stat-label">平均分</div>
+      </div>
+      <div class="card pg-stat-card">
+        <div class="pg-stat-value">3</div>
+        <div class="pg-stat-label">薄弱点</div>
+      </div>
+    </div>
+
+    <!-- Radar + Knowledge List -->
+    <div class="pg-radar-section">
+      <div class="pg-radar-chart" id="pgRadarChart"></div>
+      <div class="pg-knowledge-list">
+        <div class="card pg-knowledge-item">
+          <div class="pg-kw-header">
+            <span class="pg-kw-name">Transformer 架构</span>
+            <span class="pg-kw-pct">92%</span>
+          </div>
+          <div class="pg-kw-bar"><div class="pg-kw-bar-fill high" style="width:92%"></div></div>
+          <span class="pg-kw-level high">精通</span>
+        </div>
+        <div class="card pg-knowledge-item">
+          <div class="pg-kw-header">
+            <span class="pg-kw-name">Prompt Engineering</span>
+            <span class="pg-kw-pct">88%</span>
+          </div>
+          <div class="pg-kw-bar"><div class="pg-kw-bar-fill high" style="width:88%"></div></div>
+          <span class="pg-kw-level high">精通</span>
+        </div>
+        <div class="card pg-knowledge-item">
+          <div class="pg-kw-header">
+            <span class="pg-kw-name">RAG 检索增强</span>
+            <span class="pg-kw-pct">75%</span>
+          </div>
+          <div class="pg-kw-bar"><div class="pg-kw-bar-fill medium" style="width:75%"></div></div>
+          <span class="pg-kw-level medium">熟练</span>
+        </div>
+        <div class="card pg-knowledge-item">
+          <div class="pg-kw-header">
+            <span class="pg-kw-name">LoRA 微调</span>
+            <span class="pg-kw-pct">60%</span>
+          </div>
+          <div class="pg-kw-bar"><div class="pg-kw-bar-fill medium" style="width:60%"></div></div>
+          <span class="pg-kw-level medium">学习中</span>
+        </div>
+        <div class="card pg-knowledge-item">
+          <div class="pg-kw-header">
+            <span class="pg-kw-name">Agent 开发</span>
+            <span class="pg-kw-pct">40%</span>
+          </div>
+          <div class="pg-kw-bar"><div class="pg-kw-bar-fill low" style="width:40%"></div></div>
+          <span class="pg-kw-level low">入门</span>
+        </div>
+        <div class="card pg-knowledge-item">
+          <div class="pg-kw-header">
+            <span class="pg-kw-name">企业部署</span>
+            <span class="pg-kw-pct">25%</span>
+          </div>
+          <div class="pg-kw-bar"><div class="pg-kw-bar-fill low" style="width:25%"></div></div>
+          <span class="pg-kw-level low">入门</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Document Progress List -->
+    <h3 class="pg-doc-section-title">各文档进度</h3>
+    <div class="pg-doc-list">
+      <div class="card pg-doc-card">
+        <div class="pg-doc-header">
+          <span class="pg-doc-name">大模型技术架构概述.pdf</span>
+          <span class="pg-doc-status done">已完成</span>
+        </div>
+        <div class="pg-doc-bar"><div class="pg-doc-bar-fill" style="width:100%"></div></div>
+        <div class="pg-doc-scores">
+          <span>测评 4 次</span><span>最高 96</span><span>平均 92</span>
+        </div>
+        <div class="pg-doc-summary">最近：5月30日 · 得分 92 · 等级 A · 用时 12:34</div>
+        <div class="pg-doc-notes">
+          <textarea class="pg-notes-textarea" data-doc="arch" placeholder="添加笔记…">Transformer 的多头注意力机制需要重点理解 QKV 三个矩阵的维度变换，已通过手写推导掌握。</textarea>
+          <div class="pg-notes-saved" data-doc="arch">✓ 已自动保存</div>
+        </div>
+        <div class="pg-doc-footer">
+          <select class="pg-status-select" data-doc="arch">
+            <option value="done" selected>已完成</option>
+            <option value="active">学习中</option>
+            <option value="idle">待开始</option>
+          </select>
+          <button class="pg-save-btn" data-doc="arch">保存</button>
+        </div>
+      </div>
+
+      <div class="card pg-doc-card">
+        <div class="pg-doc-header">
+          <span class="pg-doc-name">LLM 训练方法与实践.md</span>
+          <span class="pg-doc-status done">已完成</span>
+        </div>
+        <div class="pg-doc-bar"><div class="pg-doc-bar-fill" style="width:100%"></div></div>
+        <div class="pg-doc-scores">
+          <span>测评 3 次</span><span>最高 88</span><span>平均 85</span>
+        </div>
+        <div class="pg-doc-summary">最近：5月28日 · 得分 75 · 等级 B · 用时 18:22</div>
+        <div class="pg-doc-notes">
+          <textarea class="pg-notes-textarea" data-doc="train" placeholder="添加笔记…">LoRA 的秩 r 选择实验表明 r=8 在大多数场景下性价比最高，r=16 收益递减明显。</textarea>
+          <div class="pg-notes-saved" data-doc="train">✓ 已自动保存</div>
+        </div>
+        <div class="pg-doc-footer">
+          <select class="pg-status-select" data-doc="train">
+            <option value="done" selected>已完成</option>
+            <option value="active">学习中</option>
+            <option value="idle">待开始</option>
+          </select>
+          <button class="pg-save-btn" data-doc="train">保存</button>
+        </div>
+      </div>
+
+      <div class="card pg-doc-card">
+        <div class="pg-doc-header">
+          <span class="pg-doc-name">企业级 RAG 落地实践.pptx</span>
+          <span class="pg-doc-status active">学习中</span>
+        </div>
+        <div class="pg-doc-bar"><div class="pg-doc-bar-fill" style="width:65%"></div></div>
+        <div class="pg-doc-scores">
+          <span>测评 2 次</span><span>最高 82</span><span>平均 78</span>
+        </div>
+        <div class="pg-doc-summary">最近：5月22日 · 得分 88 · 等级 A · 用时 15:08</div>
+        <div class="pg-doc-notes">
+          <textarea class="pg-notes-textarea" data-doc="rag" placeholder="添加笔记…">Chunk 大小推荐 512-1024 tokens，overlap 150-200 效果最佳。需要结合实际场景调参。</textarea>
+          <div class="pg-notes-saved" data-doc="rag">✓ 已自动保存</div>
+        </div>
+        <div class="pg-doc-footer">
+          <select class="pg-status-select" data-doc="rag">
+            <option value="done">已完成</option>
+            <option value="active" selected>学习中</option>
+            <option value="idle">待开始</option>
+          </select>
+          <button class="pg-save-btn" data-doc="rag">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weak Points -->
+    <h3 class="pg-weak-section-title">薄弱知识点</h3>
+    <div class="pg-weak-list">
+      <div class="card pg-weak-item">
+        <span class="pg-weak-dot"></span>
+        <span class="pg-weak-name">Agent 多工具协作调度</span>
+        <span class="pg-weak-rate bad">正确率 32%</span>
+      </div>
+      <div class="card pg-weak-item">
+        <span class="pg-weak-dot"></span>
+        <span class="pg-weak-name">分布式推理部署架构</span>
+        <span class="pg-weak-rate bad">正确率 40%</span>
+      </div>
+      <div class="card pg-weak-item">
+        <span class="pg-weak-dot"></span>
+        <span class="pg-weak-name">RLHF 训练流程细节</span>
+        <span class="pg-weak-rate warn">正确率 55%</span>
+      </div>
+    </div>
+  </div>
+  <!-- Page 5: 报告 -->
+  <div class="page" id="page-report">
+    <h2 class="section-title">学习报告</h2>
+    <p class="section-subtitle">AI 驱动的学习分析，一键生成深度报告</p>
+
+    <!-- Generate Area -->
+    <div class="card rp-generate-area">
+      <div class="rp-type-options">
+        <button class="rp-type-btn selected" data-type="weekly" id="rpTypeWeekly">本周报告</button>
+        <button class="rp-type-btn" data-type="custom" id="rpTypeCustom">自定义时间</button>
+      </div>
+      <div class="rp-date-range hidden" id="rpDateRange">
+        <input type="date" class="rp-date-input" id="rpDateStart" value="2026-05-25" />
+        <span class="rp-date-sep">至</span>
+        <input type="date" class="rp-date-input" id="rpDateEnd" value="2026-05-31" />
+      </div>
+      <button class="rp-generate-btn" id="rpGenerateBtn">生成报告</button>
+    </div>
+
+    <!-- Report Content -->
+    <div class="rp-content-area hidden" id="rpContentArea">
+      <div class="rp-download-bar">
+        <button class="rp-download-btn" id="rpDownloadBtn">⬇ 下载 Markdown</button>
+      </div>
+      <div class="card rp-content" id="rpContent"></div>
+    </div>
+
+    <!-- History -->
+    <div class="rp-history">
+      <h3 class="rp-history-title">历史报告</h3>
+      <div class="rp-history-list">
+        <div class="card rp-history-item" data-report="r3">
+          <span class="rp-history-range">2026.05.18 — 2026.05.24</span>
+          <span class="rp-history-date">5 月 24 日</span>
+          <span class="rp-history-arrow">▶</span>
+        </div>
+        <div class="card rp-history-item" data-report="r2">
+          <span class="rp-history-range">2026.05.11 — 2026.05.17</span>
+          <span class="rp-history-date">5 月 17 日</span>
+          <span class="rp-history-arrow">▶</span>
+        </div>
+        <div class="card rp-history-item" data-report="r1">
+          <span class="rp-history-range">2026.05.04 — 2026.05.10</span>
+          <span class="rp-history-date">5 月 10 日</span>
+          <span class="rp-history-arrow">▶</span>
+        </div>
+      </div>
+    </div>
+  </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4 style="font-family:var(--font-serif);font-size:0.95rem;margin-bottom:10px">💡 AI 学习建议</h4>
+      <ul style="font-size:0.85rem;color:var(--text-dim);padding-left:18px;display:flex;flex-direction:column;gap:6px">
+        <li>本周优先完成「Agent 智能体开发」模块的前 3 节</li>
+        <li>建议结合 AutoGen 官方文档进行实操练习</li>
+        <li>你已积累了 12 个模块的知识，可以尝试做一个小型 RAG 项目巩固</li>
+        <li>下周测评重点：Agent 框架对比 & 企业部署方案设计</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const API_BASE = "/api";
+
+  // ===== Tab Switching =====
+  var tabs = document.querySelectorAll(".nav-tab");
+  var pages = document.querySelectorAll(".page");
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      var target = this.getAttribute("data-page");
+      tabs.forEach(function (t) { t.classList.remove("active"); });
+      this.classList.add("active");
+      pages.forEach(function (p) { p.classList.remove("active"); });
+      var targetPage = document.getElementById("page-" + target);
+      if (targetPage) targetPage.classList.add("active");
+    });
+  });
+
+  // ===== Connection Status (real /api/health) =====
+  var statusDot = document.getElementById("statusDot");
+  var statusText = document.getElementById("statusText");
+
+  function checkConnection() {
+    fetch(API_BASE + "/health")
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.status === "ok" && data.llm.configured) {
+          statusDot.classList.remove("offline");
+          statusText.textContent = "已连接";
+        } else if (data.status === "ok") {
+          statusDot.classList.add("offline");
+          statusText.textContent = "未配置";
+        } else {
+          statusDot.classList.add("offline");
+          statusText.textContent = "未连接";
+        }
+      })
+      .catch(function() {
+        statusDot.classList.add("offline");
+        statusText.textContent = "未连接";
+      });
+  }
+  checkConnection();
+  setInterval(checkConnection, 30000);
+
+  // ===== Study Page: AI Chat (API integrated) =====
+  var studyChat       = document.getElementById("studyChat");
+  var studyEmpty      = document.getElementById("studyEmpty");
+  var studyInput      = document.getElementById("studyInput");
+  var studySend       = document.getElementById("studySend");
+  var studySuggestions = document.getElementById("studySuggestions");
+  var studyNewChat    = document.getElementById("studyNewChat");
+  var studyDocSelect  = document.getElementById("studyDocSelect");
+  var isSending       = false;
+  var currentConvId   = null;
+
+  // Load document list into selector
+  function loadStudyDocs() {
+    fetch(API_BASE + "/documents?status=done")
+      .then(function(r) { return r.json(); })
+      .then(function(docs) {
+        studyDocSelect.innerHTML = '<option value="">全部资料</option>';
+        docs.forEach(function(d) {
+          studyDocSelect.innerHTML += '<option value="' + d.id + '">' + d.original_name + '</option>';
+        });
+      })
+      .catch(function() {});
+  }
+  loadStudyDocs();
+
+  function simpleMarkdown(text) {
+    var html = text;
+    html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    html = html.replace(/^### (.+)$/gm, "<h3>$1</h3>");
+    html = html.replace(/^## (.+)$/gm, "<h2>$1</h2>");
+    html = html.replace(/^# (.+)$/gm, "<h1>$1</h1>");
+    html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+    html = html.replace(/^- (.+)$/gm, "<li>$1</li>");
+    html = html.replace(/(<li>.*<\/li>\n?)+/g, "<ul>$&</ul>");
+    var parts = html.split(/\n\n+/);
+    return parts.map(function(p) {
+      p = p.trim();
+      if (!p) return "";
+      if (/^<(h[1-4]|ul|ol|pre|blockquote)/.test(p)) return p;
+      return "<p>" + p.replace(/\n/g, "<br>") + "</p>";
+    }).join("\n");
+  }
+
+  function addStudyMessage(text, role, sources) {
+    studyEmpty.classList.add("hidden");
+    var msg = document.createElement("div");
+    msg.className = "study-msg " + role;
+    var avatar = document.createElement("div");
+    avatar.className = "study-msg-avatar";
+    avatar.textContent = role === "user" ? "我" : "AI";
+    var body = document.createElement("div");
+    body.className = "study-msg-body";
+    if (role === "user") {
+      body.textContent = text;
+    } else {
+      body.innerHTML = simpleMarkdown(text);
+      if (sources && sources.length) {
+        var wrapper = document.createElement("div");
+        var toggle = document.createElement("span");
+        toggle.className = "study-sources-toggle";
+        toggle.innerHTML = '<span class="arrow">▶</span> 引用来源 (' + sources.length + ')';
+        var list = document.createElement("div");
+        list.className = "study-sources-list";
+        sources.forEach(function(s) {
+          var item = document.createElement("div");
+          item.className = "study-source-item";
+          item.innerHTML = '<div class="study-source-name">' + (s.name || "来源") + '</div>' + (s.snippet || "");
+          list.appendChild(item);
+        });
+        toggle.addEventListener("click", function() {
+          toggle.classList.toggle("open");
+          list.classList.toggle("open");
+        });
+        wrapper.appendChild(toggle);
+        wrapper.appendChild(list);
+        body.appendChild(wrapper);
+      }
+    }
+    msg.appendChild(avatar);
+    msg.appendChild(body);
+    studyChat.appendChild(msg);
+    studyChat.scrollTop = studyChat.scrollHeight;
+    return msg;
+  }
+
+  function showStudyLoading() {
+    studyEmpty.classList.add("hidden");
+    var msg = document.createElement("div");
+    msg.className = "study-msg assistant";
+    msg.id = "studyLoadingMsg";
+    var avatar = document.createElement("div");
+    avatar.className = "study-msg-avatar";
+    avatar.textContent = "AI";
+    var body = document.createElement("div");
+    body.className = "study-msg-body";
+    body.style.background = "var(--bg-card)";
+    body.style.border = "1px solid var(--border)";
+    body.style.borderRadius = "0 14px 14px 14px";
+    var dots = document.createElement("div");
+    dots.className = "study-loading";
+    dots.innerHTML = "<span></span><span></span><span></span>";
+    body.appendChild(dots);
+    msg.appendChild(avatar);
+    msg.appendChild(body);
+    studyChat.appendChild(msg);
+    studyChat.scrollTop = studyChat.scrollHeight;
+  }
+
+  function hideStudyLoading() {
+    var el = document.getElementById("studyLoadingMsg");
+    if (el) el.remove();
+  }
+
+  function sendStudyMessage() {
+    var text = studyInput.value.trim();
+    if (!text || isSending) return;
+
+    isSending = true;
+    studySend.disabled = true;
+    studySend.textContent = "发送中…";
+
+    addStudyMessage(text, "user");
+    studyInput.value = "";
+    studyInput.style.height = "auto";
+    showStudyLoading();
+
+    // Auto-create conversation if needed
+    function doSend() {
+      var docId = studyDocSelect.value || null;
+      var body = JSON.stringify({ message: text, document_id: docId ? parseInt(docId) : null });
+      fetch(API_BASE + "/conversations/" + currentConvId + "/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: body,
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          hideStudyLoading();
+          isSending = false;
+          studySend.disabled = false;
+          studySend.textContent = "发送";
+          addStudyMessage(data.answer, "assistant", data.sources || []);
+        })
+        .catch(function() {
+          hideStudyLoading();
+          isSending = false;
+          studySend.disabled = false;
+          studySend.textContent = "发送";
+          addStudyMessage("抱歉，连接后端服务失败。请确认服务已启动。", "assistant", []);
+        });
+    }
+
+    if (!currentConvId) {
+      fetch(API_BASE + "/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: text.slice(0, 30), document_id: studyDocSelect.value ? parseInt(studyDocSelect.value) : null }),
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          currentConvId = data.id;
+          doSend();
+        })
+        .catch(function() { doSend(); });
+    } else {
+      doSend();
+    }
+  }
+
+  studySend.addEventListener("click", sendStudyMessage);
+  studyInput.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendStudyMessage(); }
+  });
+  studyInput.addEventListener("input", function() {
+    this.style.height = "auto";
+    this.style.height = Math.min(this.scrollHeight, 120) + "px";
+  });
+
+  studySuggestions.addEventListener("click", function(e) {
+    if (e.target.classList.contains("study-suggestion")) {
+      studyInput.value = e.target.textContent;
+      studyInput.style.height = "auto";
+      studyInput.style.height = Math.min(studyInput.scrollHeight, 120) + "px";
+      sendStudyMessage();
+    }
+  });
+
+  studyNewChat.addEventListener("click", function() {
+    var msgs = studyChat.querySelectorAll(".study-msg");
+    msgs.forEach(function(m) { m.remove(); });
+    studyEmpty.classList.remove("hidden");
+    studyInput.value = "";
+    studyInput.style.height = "auto";
+    studyInput.focus();
+    currentConvId = null;
+  });
+
+  studyDocSelect.addEventListener("change", function() {
+    var val = this.value;
+    if (val) {
+      studyInput.placeholder = "针对「" + this.options[this.selectedIndex].text + "」提问… Shift+Enter 换行，Enter 发送";
+    } else {
+      studyInput.placeholder = "输入你的问题…… Shift+Enter 换行，Enter 发送";
+    }
+  });
+
+  // ===== Quiz Page: Setup / Taking / Result (API integrated) =====
+  var qzStageSetup   = document.getElementById("qzStageSetup");
+  var qzStageTaking  = document.getElementById("qzStageTaking");
+  var qzStageResult  = document.getElementById("qzStageResult");
+  var qzStartBtn     = document.getElementById("qzStartBtn");
+  var qzDocSelect    = document.getElementById("qzDocSelect");
+  var qzCountOptions = document.getElementById("qzCountOptions");
+  var qzQuestionArea = document.getElementById("qzQuestionArea");
+  var qzBtnCancel    = document.getElementById("qzBtnCancel");
+  var qzBtnSubmit    = document.getElementById("qzBtnSubmit");
+  var qzRetryBtn     = document.getElementById("qzRetryBtn");
+
+  var qzSelectedCount = 8;
+  var qzTimerInterval = null;
+  var qzTimerSeconds  = 0;
+  var qzQuestions     = [];
+  var qzAnswers       = {};
+  var qzCurrentQ      = 0;
+  var qzAssessmentId  = null;
+
+  function qzShowStage(stage) {
+    [qzStageSetup, qzStageTaking, qzStageResult].forEach(function(s) { s.classList.remove("active"); });
+    stage.classList.add("active");
+  }
+
+  // Load docs into quiz doc selector
+  function loadQuizDocs() {
+    fetch(API_BASE + "/documents?status=done")
+      .then(function(r) { return r.json(); })
+      .then(function(docs) {
+        qzDocSelect.innerHTML = '<option value="">全部资料</option>';
+        docs.forEach(function(d) {
+          qzDocSelect.innerHTML += '<option value="' + d.id + '">' + d.original_name + '</option>';
+        });
+      })
+      .catch(function() {});
+  }
+  loadQuizDocs();
+
+  qzCountOptions.addEventListener("click", function(e) {
+    if (e.target.classList.contains("qz-count-btn")) {
+      var btns = qzCountOptions.querySelectorAll(".qz-count-btn");
+      btns.forEach(function(b) { b.classList.remove("selected"); });
+      e.target.classList.add("selected");
+      qzSelectedCount = parseInt(e.target.getAttribute("data-count"));
+    }
+  });
+
+  function qzStartTimer() { qzTimerSeconds = 0; qzStopTimer(); updateTimerDisplay(); qzTimerInterval = setInterval(function() { qzTimerSeconds++; updateTimerDisplay(); }, 1000); }
+  function qzStopTimer() { if (qzTimerInterval) { clearInterval(qzTimerInterval); qzTimerInterval = null; } }
+  function updateTimerDisplay() {
+    var m = Math.floor(qzTimerSeconds / 60), s = qzTimerSeconds % 60;
+    document.getElementById("qzInfoTimer").textContent = (m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+    if (qzTimerSeconds > 300) document.getElementById("qzInfoTimer").classList.add("warning");
+  }
+  function qzFormatTime(sec) { var m=Math.floor(sec/60),s=sec%60; return (m<10?"0":"")+m+":"+(s<10?"0":"")+s; }
+
+  qzStartBtn.addEventListener("click", function() {
+    qzStartBtn.textContent = "AI 正在出题…";
+    qzStartBtn.disabled = true;
+    var docId = qzDocSelect.value || null;
+
+    fetch(API_BASE + "/assessments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ document_id: docId ? parseInt(docId) : null, count: qzSelectedCount }),
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.error) { alert(data.error); qzStartBtn.textContent = "开始测评"; qzStartBtn.disabled = false; return; }
+        qzAssessmentId = data.assessment_id;
+        qzQuestions = data.questions;
+        qzAnswers = {};
+        qzQuestions.forEach(function(_, i) { qzAnswers[i] = null; });
+        qzCurrentQ = 0;
+        document.getElementById("qzInfoDoc").textContent = data.document_name || "全部资料";
+        qzStartBtn.textContent = "开始测评";
+        qzStartBtn.disabled = false;
+        qzRenderQuestion();
+        qzStartTimer();
+        qzShowStage(qzStageTaking);
+      })
+      .catch(function() {
+        alert("连接后端失败，请确认服务已启动");
+        qzStartBtn.textContent = "开始测评";
+        qzStartBtn.disabled = false;
+      });
+  });
+
+  function qzRenderQuestion() {
+    if (qzCurrentQ >= qzQuestions.length) { qzSubmitQuiz(); return; }
+    var q = qzQuestions[qzCurrentQ];
+    document.getElementById("qzInfoProgress").textContent = "第 " + (qzCurrentQ + 1) + "/" + qzQuestions.length + " 题";
+    var diffLabel = q.difficulty === "easy" ? "简单" : q.difficulty === "medium" ? "中等" : "困难";
+
+    var html = '<div class="card qz-question-card">';
+    html += '<div class="qz-q-header">';
+    html += '<span class="qz-q-number">第 ' + (qzCurrentQ + 1) + ' 题</span>';
+    html += '<div class="qz-q-tags">';
+    html += '<span class="qz-q-tag ' + (q.difficulty||"medium") + '">' + diffLabel + '</span>';
+    if (q.knowledge_point) html += '<span class="qz-q-tag topic">' + q.knowledge_point + '</span>';
+    html += '<span class="qz-q-tag type">' + (q.type === "choice" ? "选择题" : q.type === "tf" ? "判断题" : "简答题") + '</span>';
+    html += '</div></div>';
+    html += '<div class="qz-q-text">' + q.question + '</div>';
+
+    if (q.type === "choice") {
+      html += '<div class="qz-options">';
+      var letters = ["A","B","C","D"];
+      (q.options||[]).forEach(function(opt, i) {
+        var sel = qzAnswers[qzCurrentQ] === i ? " selected" : "";
+        html += '<div class="qz-option-card' + sel + '" data-idx="' + i + '">';
+        html += '<span class="qz-option-letter">' + letters[i] + '</span>';
+        html += '<span class="qz-option-text">' + opt + '</span></div>';
+      });
+      html += '</div>';
+    } else if (q.type === "tf") {
+      var selC = qzAnswers[qzCurrentQ] === "correct" ? " selected" : "";
+      var selW = qzAnswers[qzCurrentQ] === "wrong" ? " selected" : "";
+      html += '<div class="qz-tf-options"><div class="qz-tf-btn' + selC + '" data-val="correct">✓ 正确</div><div class="qz-tf-btn' + selW + '" data-val="wrong">✕ 错误</div></div>';
+    } else {
+      html += '<textarea class="qz-textarea" id="qzShortAnswer" placeholder="请输入你的回答…">' + (qzAnswers[qzCurrentQ]||"") + '</textarea>';
+    }
+    html += '</div>';
+    qzQuestionArea.innerHTML = html;
+
+    qzQuestionArea.querySelectorAll(".qz-option-card").forEach(function(card) {
+      card.addEventListener("click", function() { qzAnswers[qzCurrentQ] = parseInt(this.getAttribute("data-idx")); qzCurrentQ++; qzRenderQuestion(); });
+    });
+    qzQuestionArea.querySelectorAll(".qz-tf-btn").forEach(function(btn) {
+      btn.addEventListener("click", function() { qzAnswers[qzCurrentQ] = this.getAttribute("data-val"); qzCurrentQ++; qzRenderQuestion(); });
+    });
+    var shortEl = document.getElementById("qzShortAnswer");
+    if (shortEl) {
+      shortEl.focus();
+      shortEl.addEventListener("keydown", function(e) {
+        if (e.key === "Enter" && e.ctrlKey) { qzAnswers[qzCurrentQ] = this.value.trim() || "(空)"; qzCurrentQ++; qzRenderQuestion(); }
+      });
+    }
+  }
+
+  function qzSubmitQuiz() {
+    var shortEl = document.getElementById("qzShortAnswer");
+    if (shortEl) { qzAnswers[qzCurrentQ] = shortEl.value.trim() || "(空)"; qzCurrentQ++; if (qzCurrentQ < qzQuestions.length) { qzRenderQuestion(); return; } }
+    qzStopTimer();
+
+    var answerPayload = {};
+    Object.keys(qzAnswers).forEach(function(k) { answerPayload[k] = String(qzAnswers[k]); });
+
+    fetch(API_BASE + "/assessments/" + qzAssessmentId + "/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answers: answerPayload, duration_sec: qzTimerSeconds }),
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var score = data.score || 0, correct = data.correct_count || 0, total = data.total || 0;
+        document.getElementById("qzStatCorrect").textContent = correct;
+        document.getElementById("qzStatWrong").textContent = total - correct;
+        document.getElementById("qzStatTime").textContent = qzFormatTime(qzTimerSeconds);
+        document.getElementById("qzStatTotal").textContent = total;
+        var gradeEl = document.getElementById("qzGrade");
+        gradeEl.textContent = data.grade === "A" ? "优秀" : data.grade === "B" ? "良好" : data.grade === "C" ? "及格" : "需加强";
+        gradeEl.className = "qz-grade " + (data.grade||"d").toLowerCase();
+
+        var circumference = 376.99;
+        var offset = circumference - (score / 100) * circumference;
+        var ring = document.getElementById("qzRingFill");
+        ring.style.transition = "none";
+        ring.setAttribute("stroke-dashoffset", circumference);
+        var ringVal = document.getElementById("qzRingValue");
+
+        var reviewHtml = "";
+        (data.questions||[]).forEach(function(qf, i) {
+          var isCorrect = qf.is_correct;
+          reviewHtml += '<div class="card qz-review-item">';
+          reviewHtml += '<div class="qz-review-q">' + (i+1) + '. ' + qf.question + '</div>';
+          if (isCorrect) {
+            reviewHtml += '<div class="qz-review-answer correct">✓ 回答正确</div>';
+          } else {
+            reviewHtml += '<div class="qz-review-answer wrong">✕ 回答错误</div>';
+            reviewHtml += '<div class="qz-review-answer correct">正确答案: ' + (qf.correct_answer||"") + '</div>';
+          }
+          reviewHtml += '<div class="qz-review-feedback">💡 ' + (qf.feedback||"") + '</div>';
+          reviewHtml += '</div>';
+        });
+        document.getElementById("qzReviewArea").innerHTML = reviewHtml;
+        qzShowStage(qzStageResult);
+
+        setTimeout(function() {
+          ring.style.transition = "stroke-dashoffset 1.2s cubic-bezier(0.25, 0.1, 0.25, 1)";
+          ring.setAttribute("stroke-dashoffset", offset);
+          var countUp = 0;
+          var iv = setInterval(function() { countUp += Math.ceil(score/40); if (countUp>=score) { countUp=score; clearInterval(iv); } ringVal.textContent = countUp; }, 30);
+        }, 200);
+      })
+      .catch(function() { alert("提交失败，请重试"); });
+  }
+
+  qzBtnSubmit.addEventListener("click", function() { if (confirm("确定提交答卷吗？")) qzSubmitQuiz(); });
+  qzBtnCancel.addEventListener("click", function() { if (confirm("确定放弃吗？")) { qzStopTimer(); qzShowStage(qzStageSetup); } });
+  qzRetryBtn.addEventListener("click", function() { qzShowStage(qzStageSetup); });
+
+  // Load quiz history
+  function loadQuizHistory() {
+    fetch(API_BASE + "/assessments/history?limit=5")
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var container = document.querySelector(".qz-history .card");
+        if (!container) return;
+        container.innerHTML = "";
+        data.forEach(function(a) {
+          var cls = a.score >= 80 ? "high" : a.score >= 60 ? "medium" : "low";
+          container.innerHTML += '<div class="qz-history-item"><span class="qz-history-doc">' + (a.document_name||"全部") + '</span><span class="qz-history-date">' + (a.completed_at||"").slice(0,10) + '</span><span class="qz-history-score ' + cls + '">' + a.score + '</span></div>';
+        });
+      })
+      .catch(function() {});
+  }
+  loadQuizHistory();
+
+  // ===== Library Page: Upload & Document Management (API integrated) =====
+  var libUploadZone  = document.getElementById("libUploadZone");
+  var libFileInput   = document.getElementById("libFileInput");
+  var libDocList     = document.getElementById("libDocList");
+
+  var toastContainer = document.getElementById("libToastContainer");
+  if (!toastContainer) {
+    toastContainer = document.createElement("div");
+    toastContainer.className = "lib-toast-container";
+    toastContainer.id = "libToastContainer";
+    document.body.appendChild(toastContainer);
+  }
+
+  function showToast(msg, type) {
+    type = type || "info";
+    var icons = { success: "✓", error: "✕", info: "ℹ" };
+    var toast = document.createElement("div");
+    toast.className = "lib-toast " + type;
+    toast.innerHTML = '<span class="lib-toast-icon">' + (icons[type] || "") + '</span><span>' + msg + '</span>';
+    toastContainer.appendChild(toast);
+    setTimeout(function() { if (toast.parentNode) toast.remove(); }, 3500);
+  }
+
+  function getFileTypeIcon(filename) {
+    var ext = filename.split(".").pop().toLowerCase();
+    var map = { pdf:"PDF", pptx:"PPTX", ppt:"PPTX", docx:"DOCX", doc:"DOCX", md:"MD", txt:"TXT" };
+    return map[ext] || "FILE";
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + " KB";
+    return (bytes/(1024*1024)).toFixed(1) + " MB";
+  }
+
+  var allowedExts = ["pdf","pptx","ppt","docx","doc","md","txt"];
+
+  function uploadFiles(files) {
+    if (!files || !files.length) return;
+    Array.from(files).forEach(function(file) {
+      var ext = file.name.split(".").pop().toLowerCase();
+      if (allowedExts.indexOf(ext) === -1) { showToast("不支持: ." + ext, "error"); return; }
+      if (file.size > 100 * 1024 * 1024) { showToast("文件过大: " + file.name, "error"); return; }
+
+      showToast("正在上传并解析 " + file.name + "…", "info");
+      var formData = new FormData();
+      formData.append("file", file);
+
+      fetch(API_BASE + "/documents", { method: "POST", body: formData })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.success) {
+            showToast(file.name + " 解析完成 · " + data.chunks + " 个分块", "success");
+            loadDocList();
+            loadStudyDocs();
+            loadQuizDocs();
+          } else {
+            showToast("解析失败: " + (data.error || "未知"), "error");
+            loadDocList();
+          }
+        })
+        .catch(function() { showToast("上传失败: 无法连接后端", "error"); });
+    });
+  }
+
+  function loadDocList() {
+    fetch(API_BASE + "/documents")
+      .then(function(r) { return r.json(); })
+      .then(function(docs) {
+        libDocList.innerHTML = "";
+        docs.forEach(function(d) {
+          var ext = d.file_type;
+          var statusClass = d.parse_status === "done" ? "parsed" : d.parse_status === "failed" ? "failed" : "pending";
+          var statusText = d.parse_status === "done" ? "已解析" : d.parse_status === "failed" ? "失败" : "待处理";
+          var actions = '<button class="lib-doc-btn danger" data-action="delete" data-id="' + d.id + '">删除</button>';
+          if (d.parse_status === "failed") {
+            actions = '<button class="lib-doc-btn" data-action="retry" data-id="' + d.id + '">重试</button>' + actions;
+          }
+          libDocList.innerHTML += '<div class="lib-doc-row" data-id="' + d.id + '">' +
+            '<div class="lib-doc-icon ' + ext + '">' + getFileTypeIcon(d.original_name) + '</div>' +
+            '<div class="lib-doc-info"><div class="lib-doc-name">' + d.original_name + '</div><div class="lib-doc-meta"><span>' + formatSize(d.file_size) + '</span><span>' + (d.created_at||"").slice(0,10) + '</span></div></div>' +
+            '<span class="lib-doc-status ' + statusClass + '">' + statusText + '</span>' +
+            '<div class="lib-doc-actions">' + actions + '</div></div>';
+        });
+      })
+      .catch(function() {});
+  }
+  loadDocList();
+
+  libUploadZone.addEventListener("click", function() { libFileInput.click(); });
+  libFileInput.addEventListener("change", function() { uploadFiles(this.files); this.value = ""; });
+  libUploadZone.addEventListener("dragover", function(e) { e.preventDefault(); this.classList.add("dragover"); });
+  libUploadZone.addEventListener("dragleave", function() { this.classList.remove("dragover"); });
+  libUploadZone.addEventListener("drop", function(e) { e.preventDefault(); this.classList.remove("dragover"); uploadFiles(e.dataTransfer.files); });
+
+  libDocList.addEventListener("click", function(e) {
+    var btn = e.target.closest("button");
+    if (!btn) return;
+    var row = btn.closest(".lib-doc-row");
+    var docId = parseInt(btn.getAttribute("data-id") || row.getAttribute("data-id"));
+    var action = btn.getAttribute("data-action") || (btn.classList.contains("danger") ? "delete" : "");
+    var fname = row.querySelector(".lib-doc-name").textContent;
+
+    if (action === "delete") {
+      if (!confirm("确定删除「" + fname + "」？")) return;
+      fetch(API_BASE + "/documents/" + docId, { method: "DELETE" })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.success) { showToast("已删除: " + fname, "info"); loadDocList(); loadStudyDocs(); loadQuizDocs(); }
+          else { showToast("删除失败", "error"); }
+        })
+        .catch(function() { showToast("删除失败", "error"); });
+    }
+    if (action === "retry") {
+      showToast("正在重新解析 " + fname + "…", "info");
+      fetch(API_BASE + "/documents/" + docId + "/reparse", { method: "POST" })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.success) { showToast(fname + " 重新解析完成 · " + data.chunks + " 个分块", "success"); }
+          else { showToast("重解析失败: " + (data.error||""), "error"); }
+          loadDocList();
+        })
+        .catch(function() { showToast("重解析失败", "error"); loadDocList(); });
+    }
+  });
+
+  // ===== Progress Page: Radar + Stats + Notes (API integrated) =====
+  function initRadarChart() {
+    var chartDom = document.getElementById("pgRadarChart");
+    if (!chartDom) return;
+    var myChart = echarts.init(chartDom, "dark");
+
+    fetch(API_BASE + "/knowledge/mastery")
+      .then(function(r) { return r.json(); })
+      .then(function(kps) {
+        var indicators = [];
+        var values = [];
+        kps.forEach(function(kp) {
+          indicators.push({ name: kp.name.length > 8 ? kp.name.slice(0,8)+"…" : kp.name, max: 100 });
+          values.push(Math.round(kp.correct_rate * 100));
+        });
+        if (!indicators.length) {
+          indicators = [{ name: "暂无数据", max: 100 }];
+          values = [0];
+        }
+        myChart.setOption({
+          backgroundColor: "transparent",
+          radar: {
+            center: ["50%","52%"], radius: "65%",
+            indicator: indicators,
+            axisName: { color: "#999", fontSize: 10, fontFamily: "Inter, sans-serif" },
+            axisLine: { lineStyle: { color: "#2A2A2A" } },
+            splitLine: { lineStyle: { color: "#2A2A2A" } },
+            splitArea: { areaStyle: { color: ["transparent"] } }
+          },
+          series: [{
+            type: "radar", data: [{ value: values, name: "掌握度" }],
+            symbol: "circle", symbolSize: 5,
+            lineStyle: { color: "#E8A838", width: 2 },
+            areaStyle: { color: "rgba(232,168,56,0.18)" },
+            itemStyle: { color: "#E8A838" }
+          }]
+        });
+      })
+      .catch(function() {});
+
+    window.addEventListener("resize", function() { myChart.resize(); });
+  }
+
+  // Load progress stats
+  function loadProgressStats() {
+    fetch(API_BASE + "/progress/stats")
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var grid = document.querySelector(".pg-stats-grid");
+        if (!grid) return;
+        var d = data.documents || {}, q = data.quizzes || {}, pb = data.progress_breakdown || {};
+        grid.innerHTML =
+          '<div class="card pg-stat-card"><div class="pg-stat-value">' + (d.total||0) + '</div><div class="pg-stat-label">资料总数</div></div>' +
+          '<div class="card pg-stat-card"><div class="pg-stat-value">' + (pb.completed||0) + '</div><div class="pg-stat-label">已掌握</div></div>' +
+          '<div class="card pg-stat-card"><div class="pg-stat-value">' + (pb.in_progress||0) + '</div><div class="pg-stat-label">学习中</div></div>' +
+          '<div class="card pg-stat-card"><div class="pg-stat-value">' + (q.total||0) + '</div><div class="pg-stat-label">测评次数</div></div>' +
+          '<div class="card pg-stat-card"><div class="pg-stat-value">' + (q.avg_score||0) + '<span style="font-size:1rem;font-weight:500">%</span></div><div class="pg-stat-label">平均分</div></div>' +
+          '<div class="card pg-stat-card"><div class="pg-stat-value">' + (data.weak_count || (document.querySelectorAll(".pg-weak-item").length)) + '</div><div class="pg-stat-label">薄弱点</div></div>';
+      })
+      .catch(function() {});
+  }
+  loadProgressStats();
+
+  // Load knowledge mastery list
+  function loadKnowledgeList() {
+    fetch(API_BASE + "/knowledge/mastery")
+      .then(function(r) { return r.json(); })
+      .then(function(kps) {
+        var container = document.querySelector(".pg-knowledge-list");
+        if (!container || !kps.length) return;
+        container.innerHTML = "";
+        kps.forEach(function(kp) {
+          var pct = Math.round(kp.correct_rate * 100);
+          var cls = pct >= 80 ? "high" : pct >= 50 ? "medium" : "low";
+          var lvl = kp.level === "mastered" ? "精通" : kp.level === "familiar" ? "熟练" : kp.level === "learning" ? "学习中" : "入门";
+          var lvlCls = pct >= 80 ? "high" : pct >= 50 ? "medium" : "low";
+          container.innerHTML += '<div class="card pg-knowledge-item"><div class="pg-kw-header"><span class="pg-kw-name">' + kp.name + '</span><span class="pg-kw-pct">' + pct + '%</span></div><div class="pg-kw-bar"><div class="pg-kw-bar-fill ' + cls + '" style="width:' + pct + '%"></div></div><span class="pg-kw-level ' + lvlCls + '">' + lvl + '</span></div>';
+        });
+      })
+      .catch(function() {});
+  }
+  loadKnowledgeList();
+
+  // Load weak points
+  function loadWeakPoints() {
+    fetch(API_BASE + "/knowledge/weak")
+      .then(function(r) { return r.json(); })
+      .then(function(kps) {
+        var container = document.querySelector(".pg-weak-list");
+        if (!container || !kps.length) return;
+        container.innerHTML = "";
+        kps.forEach(function(kp) {
+          var pct = Math.round(kp.correct_rate * 100);
+          var cls = pct < 50 ? "bad" : "warn";
+          container.innerHTML += '<div class="card pg-weak-item"><span class="pg-weak-dot"></span><span class="pg-weak-name">' + kp.name + '</span><span class="pg-weak-rate ' + cls + '">正确率 ' + pct + '%</span></div>';
+        });
+      })
+      .catch(function() {});
+  }
+  loadWeakPoints();
+
+  // Load doc progress list
+  function loadDocProgressList() {
+    fetch(API_BASE + "/progress")
+      .then(function(r) { return r.json(); })
+      .then(function(docs) {
+        var container = document.querySelector(".pg-doc-list");
+        if (!container || !docs.length) return;
+        container.innerHTML = "";
+        docs.forEach(function(d) {
+          if (d.parse_status !== "done") return;
+          var p = d.progress || {};
+          var qs = d.quiz_stats || {};
+          var pct = p.progress_pct || 0;
+          var status = p.status === "completed" ? "done" : p.status === "in_progress" ? "active" : "idle";
+          var statusText = p.status === "completed" ? "已完成" : p.status === "in_progress" ? "学习中" : "待开始";
+          container.innerHTML += '<div class="card pg-doc-card"><div class="pg-doc-header"><span class="pg-doc-name">' + d.document_name + '</span><span class="pg-doc-status ' + status + '">' + statusText + '</span></div><div class="pg-doc-bar"><div class="pg-doc-bar-fill" style="width:' + pct + '%"></div></div><div class="pg-doc-scores"><span>测评 ' + (qs.total||0) + ' 次</span><span>最高 ' + (qs.max_score||0) + '</span><span>平均 ' + (qs.avg_score||0) + '</span></div><div class="pg-doc-notes"><textarea class="pg-notes-textarea" data-doc="' + d.document_id + '" placeholder="添加笔记…">' + (p.notes||"") + '</textarea><div class="pg-notes-saved" data-doc="' + d.document_id + '"></div></div><div class="pg-doc-footer"><select class="pg-status-select" data-doc="' + d.document_id + '"><option value="done"' + (status==="done"?" selected":"") + '>已完成</option><option value="active"' + (status==="active"?" selected":"") + '>学习中</option><option value="idle"' + (status==="idle"?" selected":"") + '>待开始</option></select><button class="pg-save-btn" data-doc="' + d.document_id + '">保存</button></div></div>';
+        });
+        bindProgressEvents();
+      })
+      .catch(function() {});
+  }
+  loadDocProgressList();
+
+  function bindProgressEvents() {
+    var noteTimers = {};
+    document.querySelectorAll(".pg-notes-textarea").forEach(function(ta) {
+      ta.addEventListener("input", function() {
+        var docKey = this.getAttribute("data-doc");
+        var savedEl = document.querySelector('.pg-notes-saved[data-doc="' + docKey + '"]');
+        if (noteTimers[docKey]) clearTimeout(noteTimers[docKey]);
+        if (savedEl) savedEl.classList.remove("visible");
+        noteTimers[docKey] = setTimeout(function() {
+          var notes = ta.value;
+          fetch(API_BASE + "/progress/" + docKey, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ notes: notes }),
+          }).then(function() {
+            if (savedEl) { savedEl.textContent = "✓ 已自动保存"; savedEl.classList.add("visible"); }
+          });
+        }, 1500);
+      });
+    });
+
+    document.querySelectorAll(".pg-save-btn").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        var docKey = this.getAttribute("data-doc");
+        var select = document.querySelector('.pg-status-select[data-doc="' + docKey + '"]');
+        var textarea = document.querySelector('.pg-notes-textarea[data-doc="' + docKey + '"]');
+        var payload = {};
+        if (select) payload.status = select.value;
+        if (textarea) payload.notes = textarea.value;
+        fetch(API_BASE + "/progress/" + docKey, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
+          .then(function() {
+            var statusLabel = btn.closest(".pg-doc-card").querySelector(".pg-doc-status");
+            if (statusLabel && select) {
+              var val = select.value;
+              statusLabel.textContent = val === "done" ? "已完成" : val === "active" ? "学习中" : "待开始";
+              statusLabel.className = "pg-doc-status " + val;
+            }
+            var savedEl = document.querySelector('.pg-notes-saved[data-doc="' + docKey + '"]');
+            if (savedEl) { savedEl.textContent = "✓ 已保存"; savedEl.classList.add("visible"); }
+          });
+      });
+    });
+  }
+
+  var radarInitialized = false;
+  var progressTab = document.querySelector('[data-page="progress"]');
+  if (progressTab) {
+    progressTab.addEventListener("click", function() {
+      if (!radarInitialized) { setTimeout(initRadarChart, 400); radarInitialized = true; }
+    });
+  }
+
+  // ===== Report Page: Generate / Render / Download (API integrated) =====
+  var rpTypeWeekly  = document.getElementById("rpTypeWeekly");
+  var rpTypeCustom  = document.getElementById("rpTypeCustom");
+  var rpDateRange   = document.getElementById("rpDateRange");
+  var rpGenerateBtn = document.getElementById("rpGenerateBtn");
+  var rpContentArea = document.getElementById("rpContentArea");
+  var rpContent     = document.getElementById("rpContent");
+  var rpDownloadBtn = document.getElementById("rpDownloadBtn");
+  var rpDateStart   = document.getElementById("rpDateStart");
+  var rpDateEnd     = document.getElementById("rpDateEnd");
+  var rpReportType  = "weekly";
+
+  rpTypeWeekly.addEventListener("click", function() {
+    rpTypeWeekly.classList.add("selected"); rpTypeCustom.classList.remove("selected");
+    rpDateRange.classList.add("hidden"); rpReportType = "weekly";
+  });
+  rpTypeCustom.addEventListener("click", function() {
+    rpTypeCustom.classList.add("selected"); rpTypeWeekly.classList.remove("selected");
+    rpDateRange.classList.remove("hidden"); rpReportType = "custom";
+  });
+
+  function renderReportMarkdown(md) {
+    var html = md;
+    html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    html = html.replace(/^### (.+)$/gm, "<h3>$1</h3>");
+    html = html.replace(/^## (.+)$/gm, "<h2>$1</h2>");
+    html = html.replace(/^# (.+)$/gm, "<h1>$1</h1>");
+    html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+    html = html.replace(/^---$/gm, "<hr style='border:none;border-top:1px solid var(--border);margin:20px 0'>");
+    html = html.replace(/^- (.+)$/gm, "<li>$1</li>");
+    html = html.replace(/(<li>.*<\/li>\n?)+/g, "<ul>$&</ul>");
+    // Tables
+    var lines = html.split("\n");
+    var result = [];
+    var inTable = false, tableHtml = "", headerDone = false;
+    for (var i = 0; i < lines.length; i++) {
+      var l = lines[i].trim();
+      if (l.match(/^\|.+\|$/)) {
+        if (l.match(/^\|[-: |]+\|$/)) { headerDone = true; continue; }
+        if (!inTable) { inTable = true; tableHtml = "<table>"; headerDone = false; }
+        var cells = l.replace(/^\||\|$/g, "").split("|").map(function(c) { return c.trim(); });
+        var tag = headerDone ? "td" : "th";
+        tableHtml += "<tr>" + cells.map(function(c) { return "<" + tag + ">" + c + "</" + tag + ">"; }).join("") + "</tr>";
+      } else {
+        if (inTable) { tableHtml += "</table>"; result.push(tableHtml); inTable = false; tableHtml = ""; }
+        result.push(l);
+      }
+    }
+    if (inTable) { tableHtml += "</table>"; result.push(tableHtml); }
+    html = result.join("\n");
+    html = html.replace(/^(?!<[htuol])($.+)/gm, function(m) { return "<p>" + m + "</p>"; });
+    html = html.replace(/<p>\s*<\/p>/g, "");
+    return html;
+  }
+
+  rpGenerateBtn.addEventListener("click", function() {
+    rpGenerateBtn.textContent = "生成中…";
+    rpGenerateBtn.disabled = true;
+
+    var payload = {};
+    if (rpReportType === "custom") {
+      payload.week_start = rpDateStart.value;
+      payload.week_end = rpDateEnd.value;
+    }
+
+    fetch(API_BASE + "/reports/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        rpContent.innerHTML = renderReportMarkdown(data.content);
+        rpContentArea.classList.remove("hidden");
+        rpGenerateBtn.textContent = "生成报告";
+        rpGenerateBtn.disabled = false;
+        rpContentArea.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Store current content for download
+        rpContent._currentMd = data.content;
+      })
+      .catch(function() {
+        rpContent.innerHTML = "<p>生成失败，请确认后端服务已启动。</p>";
+        rpContentArea.classList.remove("hidden");
+        rpGenerateBtn.textContent = "生成报告";
+        rpGenerateBtn.disabled = false;
+      });
+  });
+
+  rpDownloadBtn.addEventListener("click", function() {
+    var md = rpContent._currentMd || "";
+    if (!md) return;
+    var rangeLabel = rpReportType === "custom" ? (rpDateStart.value + "_" + rpDateEnd.value) : "weekly";
+    var blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "学习报告_" + rangeLabel + ".md";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // Load report history
+  function loadReportHistory() {
+    fetch(API_BASE + "/reports")
+      .then(function(r) { return r.json(); })
+      .then(function(reports) {
+        var container = document.querySelector(".rp-history-list");
+        if (!container || !reports.length) return;
+        container.innerHTML = "";
+        reports.forEach(function(rp) {
+          container.innerHTML += '<div class="card rp-history-item" data-report-id="' + rp.id + '"><span class="rp-history-range">' + rp.week_start + ' — ' + rp.week_end + '</span><span class="rp-history-date">' + (rp.generated_at||"").slice(0,10) + '</span><span class="rp-history-arrow">▶</span></div>';
+        });
+        bindReportHistory();
+      })
+      .catch(function() {});
+  }
+  loadReportHistory();
+
+  function bindReportHistory() {
+    document.querySelectorAll(".rp-history-item").forEach(function(item) {
+      item.addEventListener("click", function() {
+        var reportId = this.getAttribute("data-report-id");
+        fetch(API_BASE + "/reports/" + reportId)
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            rpContent.innerHTML = renderReportMarkdown(data.content);
+            rpContent._currentMd = data.content;
+            rpContentArea.classList.remove("hidden");
+            rpContentArea.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+      });
+    });
+  }
+
+}); // END DOMContentLoaded
+
+</script>
+</body>
+</html>
+

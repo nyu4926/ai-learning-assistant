@@ -1,0 +1,42 @@
+# ?? - ??????
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# ??????????????
+data/app.db
+data/app.db-shm
+data/app.db-wal
+data/uploads/*
+data/vector_db/*
+data/reports/*
+!data/uploads/.gitkeep
+!data/vector_db/.gitkeep
+!data/reports/.gitkeep
+
+# ??
+server.log
+server_out.log
+server_err.log
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ????
+Thumbs.db
+Desktop.ini
+
+# ????
+_fx_*.txt
+work/
+outputs/
