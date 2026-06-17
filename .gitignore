@@ -40,3 +40,9 @@ Desktop.ini
 _fx_*.txt
 work/
 outputs/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
