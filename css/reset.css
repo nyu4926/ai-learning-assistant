@@ -1,0 +1,135 @@
+/* ============================================
+   reset.css — CSS 变量 + 全局重置
+   ============================================ */
+
+/* ---- 色彩系统（暗色底 + 金色点缀） ---- */
+:root {
+  /* 背景 */
+  --bg-base:       #0a0c10;
+  --bg-surface:    #13161e;
+  --bg-elevated:   #1a1f2c;
+  --bg-hover:      #212838;
+
+  /* 文字 */
+  --text-primary:   #e8eaf0;
+  --text-secondary: #6b7280;
+  --text-muted:     #4b5563;
+
+  /* 边框与分割 */
+  --border:         #1e2433;
+  --border-focus:   #C9A227;
+
+  /* 金色点缀（主 accent） */
+  --gold:           #C9A227;
+  --gold-bright:    #e2bc48;
+  --gold-dim:       #8b7019;
+  --gold-glow:      rgba(201, 162, 39, 0.12);
+  --gold-glow-strong: rgba(201, 162, 39, 0.25);
+
+  /* 状态色 */
+  --status-online:  #22c55e;
+  --status-offline: #ef4444;
+  --status-pending: #f59e0b;
+
+  /* 功能色 */
+  --success:        #22c55e;
+  --error:          #ef4444;
+  --warning:        #f59e0b;
+  --info:           #3b82f6;
+
+  /* 尺寸 */
+  --nav-height:     60px;
+  --container-max:  1200px;
+  --radius-sm:      6px;
+  --radius-md:      10px;
+  --radius-lg:      16px;
+
+  /* 过渡 */
+  --ease:           cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast:  150ms;
+  --duration-normal: 250ms;
+}
+
+/* ---- 全局重置 ---- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei",
+               "Noto Sans SC", sans-serif;
+  color: var(--text-primary);
+  background-color: var(--bg-base);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* 滚动条样式（暗色主题） */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* 链接 */
+a {
+  color: var(--gold);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease);
+}
+a:hover {
+  color: var(--gold-bright);
+}
+
+/* 图片 / 媒体 */
+img,
+video {
+  max-width: 100%;
+  display: block;
+}
+
+/* 表单元素基础 */
+input,
+textarea,
+select,
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* 列表 */
+ul, ol {
+  list-style: none;
+}
+
+/* 选中文本颜色 */
+::selection {
+  background: var(--gold-glow-strong);
+  color: var(--gold-bright);
+}

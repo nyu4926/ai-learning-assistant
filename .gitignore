@@ -1,0 +1,30 @@
+﻿# Python
+__pycache__/
+*.pyc
+
+# 环境变量（含 API Key，不能上传）
+.env
+
+# 数据库文件
+*.db
+instance/
+
+# ChromaDB 数据
+chroma_data/
+
+# 上传文件
+uploads/*
+
+# 本地模型（太大，已改用 API）
+embedding_model/
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+Dockerfile
+
+# OS
+.DS_Store
+Thumbs.db

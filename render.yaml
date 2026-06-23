@@ -1,0 +1,31 @@
+﻿# ============================================
+# Render 部署配置
+# ============================================
+services:
+  - type: web
+    name: ai-learning-assistant
+    runtime: docker
+    repo: https://github.com/你的用户名/你的仓库
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/health
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: LLM_API_KEY
+        sync: false
+      - key: LLM_API_BASE
+        value: https://api.deepseek.com/v1
+      - key: LLM_MODEL
+        value: deepseek-chat
+      - key: EMBEDDING_API_KEY
+        sync: false
+      - key: EMBEDDING_API_BASE
+        value: https://api.openai.com/v1
+      - key: EMBEDDING_MODEL
+        value: text-embedding-3-small
+      - key: CHROMA_PERSIST_DIR
+        value: /app/chroma_data

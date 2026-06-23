@@ -1,0 +1,10 @@
+﻿flask>=3.0
+flask-cors>=4.0
+flask-sqlalchemy>=3.1
+python-dotenv>=1.0
+python-docx>=1.1
+pdfplumber>=0.10
+python-pptx>=0.6
+openai>=1.12
+chromadb>=0.4
+gunicorn>=21.2

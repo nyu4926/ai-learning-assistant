@@ -1,0 +1,251 @@
+/* ============================================
+   pages.css — 各页面专属样式
+   ============================================ */
+
+/* ==================== 页面1: 学习（聊天） ==================== */
+.page-learn {
+  /* 学习页：左侧资料选择 + 右侧对话区 */
+}
+.learn-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+  height: calc(100vh - var(--nav-height) - 56px);
+}
+
+/* 左侧资料面板 */
+.learn-sidebar {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.sidebar-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 16px;
+}
+.material-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.material-list .material-item {
+  padding: 12px 14px;
+}
+.material-list .material-name {
+  font-size: 13px;
+}
+.material-list .material-meta {
+  font-size: 11px;
+}
+.no-materials-hint {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* 右侧对话区 */
+.learn-main {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.chat-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow-y: auto;
+}
+/* 聊天消息区域：撑满可用空间 */
+.chat-body .chat-container {
+  flex: 1;
+  padding: 20px 24px;
+}
+
+
+/* ==================== 页面2: 资料库 ==================== */
+.page-materials {}
+.materials-list-wrap {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+}
+.mat-empty-state .card {
+  border-style: dashed;
+  border-color: var(--border);
+}
+
+
+/* ==================== 页面3: 测评 ==================== */
+.page-quiz {}
+.quiz-phase {
+  animation: fadeInUp 0.3s var(--ease) both;
+}
+.quiz-setup-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  margin-bottom: 24px;
+  max-width: 800px;
+}
+.quiz-setup-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.setup-field {
+  flex: 1;
+  min-width: 0;
+}
+.setup-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  display: block;
+}
+.quiz-progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 14px 20px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+.quiz-progress-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.quiz-result-summary {
+  background: linear-gradient(
+    135deg,
+    rgba(201, 162, 39, 0.08),
+    rgba(201, 162, 39, 0.03)
+  );
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  text-align: center;
+  margin-top: 24px;
+}
+.result-score-big {
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--gold);
+  line-height: 1;
+}
+.result-score-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+
+/* ==================== 页面4: 进度 ==================== */
+.page-progress {}
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.kp-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.kp-row:last-child {
+  border-bottom: none;
+}
+.kp-name {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+.kp-bar-wrapper {
+  width: 200px;
+  height: 6px;
+  background: var(--bg-base);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.kp-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s var(--ease);
+}
+.kp-bar-fill.high  { background: var(--success); }
+.kp-bar-fill.mid   { background: var(--warning); }
+.kp-bar-fill.low   { background: var(--error); }
+.kp-percent {
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 42px;
+  text-align: right;
+}
+.kp-percent.good  { color: var(--success); }
+.kp-percent.warn  { color: var(--warning); }
+.kp-percent.bad   { color: var(--error); }
+
+
+/* ==================== 页面5: 报告 ==================== */
+.page-report {}
+
+/* ---- 响应式适配 ---- */
+@media (max-width: 900px) {
+  .learn-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .learn-sidebar {
+    max-height: 200px;
+  }
+  .pg-stats-row,
+  .progress-overview-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .quiz-setup-row {
+    flex-direction: column;
+  }
+}
+@media (max-width: 640px) {
+  .navbar {
+    padding: 0 16px;
+  }
+  .main-content {
+    padding: 20px 16px;
+  }
+  .nav-tab {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .pg-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .materials-grid {
+    grid-template-columns: 1fr;
+  }
+}
