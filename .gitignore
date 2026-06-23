@@ -22,8 +22,6 @@ embedding_model/
 .vscode/
 .idea/
 
-# Docker
-Dockerfile
 
 # OS
 .DS_Store
