@@ -4,7 +4,7 @@
 
 const API = (() => {
   // 后台基础地址（本地开发指向 Flask 5000 端口，部署时改为实际地址）
-  const BASE_URL = window.location.origin;
+  const BASE_URL = 'http://127.0.0.1:5000';
 
   // 请求配置
   const DEFAULT_HEADERS = {
