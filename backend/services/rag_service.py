@@ -43,6 +43,10 @@ SYSTEM_PROMPT_TUTOR = """# 角色
 ❌ 不要扮演客服语气"""
 
 
+
+# 无资料时的通用对话提示词
+SYSTEM_PROMPT_CHAT = """你是一个有用的 AI 助手。请用中文简洁、友好地回答用户的问题。"""
+
 def ask(question: str, material_ids: list[str], history: list[dict] = None) -> tuple[str, list[dict]]:
     """
     RAG 对话：检索相关段落 → 组装 prompt → 调用 LLM
@@ -55,14 +59,21 @@ def ask(question: str, material_ids: list[str], history: list[dict] = None) -> t
     Returns:
         (回复文本, 引用来源列表)
     """
-    # 1. 向量检索相关段落
-    search_results = search(query=question, material_ids=material_ids, top_k=5)
+    # 1. 向量检索相关段落（失败不阻塞，降级为纯 LLM 对话）
+    search_results = []
+    try:
+        search_results = search(query=question, material_ids=material_ids, top_k=5)
+    except Exception as e:
+        print(f"[RAG] 向量检索失败（降级为纯 LLM）: {e}")
 
     # 2. 组装资料上下文
-    material_context = _build_material_context(search_results)
+    material_context = _build_material_context(search_results) if search_results else "（未找到相关资料内容）"
 
-    # 3. 组装系统提示词
-    system_prompt = SYSTEM_PROMPT_TUTOR.format(material_context=material_context)
+    # 3. 选择系统提示词：有资料用导师，无资料用通用对话
+    if search_results:
+        system_prompt = SYSTEM_PROMPT_TUTOR.format(material_context=material_context)
+    else:
+        system_prompt = SYSTEM_PROMPT_CHAT
 
     # 4. 组装消息列表（系统提示 + 历史 + 当前问题）
     messages = [{"role": "system", "content": system_prompt}]
