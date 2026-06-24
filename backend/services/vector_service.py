@@ -1,4 +1,4 @@
-﻿"""向量存储服务 — ChromaDB + OpenAI 兼容 Embedding API
+"""向量存储服务 — ChromaDB + OpenAI 兼容 Embedding API
 
 使用 ChromaDB 自带的 OpenAIEmbeddingFunction，
 不依赖本地模型，适合低内存环境（如 Render 免费版）。
@@ -24,8 +24,11 @@ def _get_ef():
     """懒加载 OpenAI 兼容的 embedding 函数"""
     global _ef
     if _ef is None:
+        api_key = os.getenv("EMBEDDING_API_KEY") or os.getenv("LLM_API_KEY") or ""
+        if api_key and "CHROMA_OPENAI_API_KEY" not in os.environ:
+            os.environ["CHROMA_OPENAI_API_KEY"] = api_key
         _ef = OpenAIEmbeddingFunction(
-            api_key=os.getenv("EMBEDDING_API_KEY", os.getenv("LLM_API_KEY", "")),
+            api_key=api_key,
             api_base=os.getenv("EMBEDDING_API_BASE", "https://api.openai.com/v1"),
             model_name=os.getenv("EMBEDDING_MODEL", "text-embedding-3-small"),
         )
