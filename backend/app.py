@@ -45,6 +45,18 @@ def create_app(config_name=None):
 
     # ========== 前端页面路由 ==========
 
+    # 调试：查看环境变量
+    @app.route("/api/debug", methods=["GET"])
+    def debug():
+        import os as _os
+        return jsonify({
+            "LLM_API_KEY_exists": bool(_os.getenv("LLM_API_KEY")),
+            "LLM_API_KEY_len": len(_os.getenv("LLM_API_KEY", "")),
+            "LLM_API_KEY_prefix": _os.getenv("LLM_API_KEY", "")[:8] + "..." if _os.getenv("LLM_API_KEY") else "EMPTY",
+            "LLM_API_BASE": _os.getenv("LLM_API_BASE", "default"),
+            "FLASK_ENV": _os.getenv("FLASK_ENV", "not set"),
+        })
+
     @app.route("/")
     def index():
         """首页"""
