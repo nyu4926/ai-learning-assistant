@@ -1,31 +1,30 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta name="version" content="d0d9db4">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI 学习助手</title>
 
   <!-- CSS：按层级引入 -->
-  <link rel="stylesheet" href="/static/reset.css?t={{ version }}">
-  <link rel="stylesheet" href="/static/layout.css?t={{ version }}">
-  <link rel="stylesheet" href="/static/components.css?t={{ version }}">
-  <link rel="stylesheet" href="/static/pages.css?t={{ version }}">
+  <link rel="stylesheet" href="/static/reset.css?v=2">
+  <link rel="stylesheet" href="/static/layout.css?v=2">
+  <link rel="stylesheet" href="/static/components.css?v=2">
+  <link rel="stylesheet" href="/static/pages.css?v=2">
 </head>
 <body>
 
 <div class="app-shell">
 
-  <!-- ========== 导航�?========== -->
+  <!-- ========== 导航栏 ========== -->
   <nav class="navbar">
     <div class="navbar-left">
       <div class="navbar-brand">
         <span>AI</span><span class="brand-gold">学习助手</span>
       </div>
       <div class="navbar-tabs">
-        <!-- data-route 对应 app.js 的路�?id -->
+        <!-- data-route 对应 app.js 的路由 id -->
         <a class="nav-tab active" data-route="learn" href="#learn">学习</a>
-        <a class="nav-tab" data-route="materials" href="#materials">资料�?/a>
+        <a class="nav-tab" data-route="materials" href="#materials">资料库</a>
         <a class="nav-tab" data-route="quiz" href="#quiz">测评</a>
         <a class="nav-tab" data-route="progress" href="#progress">进度</a>
         <a class="nav-tab" data-route="report" href="#report">报告</a>
@@ -34,7 +33,7 @@
 
     <div class="navbar-right">
       <!-- 状态指示灯 -->
-      <span id="status-dot" class="status-dot pending" title="后台连接状�?></span>
+      <span id="status-dot" class="status-dot pending" title="后台连接状态"></span>
       <span id="status-label" class="status-label">检测中...</span>
     </div>
   </nav>
@@ -51,11 +50,12 @@
         <aside class="learn-sidebar">
           <div class="sidebar-title">选择资料</div>
           <div class="material-list" id="learn-material-list">
-            <!-- 占位：后续由 JS 动态渲染资料列�?-->
+            <!-- 占位：后续由 JS 动态渲染资料列表 -->
             <div class="no-materials-hint">
               <p>暂无资料</p>
               <p style="margin-top:8px; font-size:12px;">
-                前往�?a href="#materials">资料�?/a>」上�?              </p>
+                前往「<a href="#materials">资料库</a>」上传
+              </p>
             </div>
           </div>
           <button class="btn btn-secondary" style="margin-top:16px;width:100%;"
@@ -66,7 +66,7 @@
 
         <!-- 右侧：对话区 -->
         <div class="learn-main">
-          <!-- 工具栏：选资�?+ 新对�?-->
+          <!-- 工具栏：选资料 + 新对话 -->
           <div class="chat-toolbar">
             <div class="toolbar-left">
               <select class="chat-material-select" id="chat-material-select" title="选择要参考的资料">
@@ -77,11 +77,12 @@
             </div>
             <button class="btn btn-ghost btn-sm" id="btn-new-chat" title="开启新对话">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-              新对�?            </button>
+              新对话
+            </button>
           </div>
 
           <div class="chat-body" id="chat-body">
-            <!-- 欢迎空状�?-->
+            <!-- 欢迎空状态 -->
             <div class="chat-welcome" id="chat-welcome">
               <div class="welcome-icon">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -90,27 +91,27 @@
                 </svg>
               </div>
               <div class="welcome-title">开始与 AI 学习导师对话</div>
-              <div class="welcome-desc">选择左侧资料，我会基于资料内容回答你的问�?/div>
+              <div class="welcome-desc">选择左侧资料，我会基于资料内容回答你的问题</div>
               <div class="welcome-tips">
-                <span class="tip-chip">💬 直接输入问题开始对�?/span>
+                <span class="tip-chip">💬 直接输入问题开始对话</span>
                 <span class="tip-chip">📄 选择资料后可基于内容提问</span>
-                <span class="tip-chip">�?Enter 发�?· Shift+Enter 换行</span>
+                <span class="tip-chip">↵ Enter 发送 · Shift+Enter 换行</span>
               </div>
             </div>
 
             <!-- 消息列表（有消息时显示，空状态隐藏） -->
             <div class="chat-container" id="chat-messages" style="display:none;">
-              <!-- JS 动态插入消�?-->
+              <!-- JS 动态插入消息 -->
             </div>
 
-            <!-- 正在思�?.. -->
+            <!-- 正在思考... -->
             <div class="chat-thinking" id="chat-thinking" style="display:none;">
               <div class="thinking-avatar ai">A</div>
               <div class="thinking-bubble">
                 <div class="thinking-dots">
                   <span></span><span></span><span></span>
                 </div>
-                <span class="thinking-text">正在思�?..</span>
+                <span class="thinking-text">正在思考...</span>
               </div>
             </div>
 
@@ -120,7 +121,8 @@
                           id="chat-input"></textarea>
                 <button class="btn btn-primary btn-sm" id="chat-send-btn">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                  发�?                </button>
+                  发送
+                </button>
               </div>
             </div>
           </div>
@@ -129,24 +131,24 @@
     </section>
 
 
-    <!-- ===== 页面2: 资料�?===== -->
+    <!-- ===== 页面2: 资料库 ===== -->
     <section class="page page-materials" data-page="materials">
       <div class="page-header flex-between">
         <div>
-          <h1 class="page-title">资料�?/h1>
-          <p class="page-subtitle">上传和管理你的学习资料（支持 PDF / PPT / Word / Markdown / TXT�?/p>
+          <h1 class="page-title">资料库</h1>
+          <p class="page-subtitle">上传和管理你的学习资料（支持 PDF / PPT / Word / Markdown / TXT）</p>
         </div>
         <button class="btn btn-primary" id="btn-upload-trigger" onclick="document.getElementById('file-input').click()">
           + 上传资料
         </button>
       </div>
 
-      <!-- 隐藏的文件选择�?-->
+      <!-- 隐藏的文件选择器 -->
       <input type="file" id="file-input"
              accept=".pdf,.ppt,.pptx,.doc,.docx,.md,.markdown,.txt"
              multiple style="display:none;">
 
-      <!-- 上传区域：拖�?+ 点击 -->
+      <!-- 上传区域：拖拽 + 点击 -->
       <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
         <div class="upload-icon">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--gold-dim)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -156,7 +158,7 @@
           </svg>
         </div>
         <div class="upload-text">拖拽文件到此处，或点击选择文件</div>
-        <div class="upload-hint">支持 PDF、PPT、Word、Markdown、TXT 格式，支持批量上�?/div>
+        <div class="upload-hint">支持 PDF、PPT、Word、Markdown、TXT 格式，支持批量上传</div>
       </div>
 
       <!-- 资料列表 -->
@@ -167,8 +169,8 @@
               <th>资料名称</th>
               <th>类型</th>
               <th>大小</th>
-              <th>分块�?/th>
-              <th>状�?/th>
+              <th>分块数</th>
+              <th>状态</th>
               <th>操作</th>
             </tr>
           </thead>
@@ -178,24 +180,24 @@
         </table>
       </div>
 
-      <!-- 空状�?-->
+      <!-- 空状态 -->
       <div class="mat-empty-state" id="mat-empty-state" style="margin-top:24px;">
         <div class="card" style="text-align:center;padding:48px;color:var(--text-muted);">
-          <p style="font-size:15px;margin-bottom:8px;">还没有上传任何资�?/p>
-          <p style="font-size:13px;">点击上方按钮或拖拽文件开始上�?/p>
+          <p style="font-size:15px;margin-bottom:8px;">还没有上传任何资料</p>
+          <p style="font-size:13px;">点击上方按钮或拖拽文件开始上传</p>
         </div>
       </div>
     </section>
 
 
-    <!-- ===== 页面3: 测评（三阶段：设�?/ 答题 / 结果�?===== -->
+    <!-- ===== 页面3: 测评（三阶段：设置 / 答题 / 结果） ===== -->
     <section class="page page-quiz" data-page="quiz">
       <div class="page-header">
         <h1 class="page-title">智能测评</h1>
-        <p class="page-subtitle">基于资料自动出题，检测掌握程�?/p>
+        <p class="page-subtitle">基于资料自动出题，检测掌握程度</p>
       </div>
 
-      <!-- ════════�?阶段1：设置面�?════════�?-->
+      <!-- ═════════ 阶段1：设置面板 ═════════ -->
       <div id="quiz-phase-setup" class="quiz-phase">
         <div class="quiz-setup-panel">
           <div class="setup-card-title">📋 出题设置</div>
@@ -209,29 +211,30 @@
             <div class="setup-field">
               <label class="setup-label">题目数量</label>
               <div class="quiz-count-btns" id="quiz-count-btns">
-                <button class="count-btn" data-count="5">5 �?/button>
-                <button class="count-btn active" data-count="10">10 �?/button>
-                <button class="count-btn" data-count="15">15 �?/button>
+                <button class="count-btn" data-count="5">5 道</button>
+                <button class="count-btn active" data-count="10">10 道</button>
+                <button class="count-btn" data-count="15">15 道</button>
               </div>
             </div>
             <div class="setup-field">
               <label class="setup-label">题型组合</label>
               <div class="quiz-type-checks" id="quiz-type-checks">
-                <label class="type-check-label"><input type="checkbox" value="choice" checked> 选择�?/label>
-                <label class="type-check-label"><input type="checkbox" value="judge" checked> 判断�?/label>
+                <label class="type-check-label"><input type="checkbox" value="choice" checked> 选择题</label>
+                <label class="type-check-label"><input type="checkbox" value="judge" checked> 判断题</label>
                 <label class="type-check-label"><input type="checkbox" value="essay"> 简答题</label>
               </div>
             </div>
           </div>
           <button class="btn btn-primary btn-lg quiz-start-btn" id="btn-start-quiz" disabled>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            开始答�?          </button>
+            开始答题
+          </button>
         </div>
       </div>
 
-      <!-- ════════�?阶段2：答题中 ════════�?-->
+      <!-- ═════════ 阶段2：答题中 ═════════ -->
       <div id="quiz-phase-answering" class="quiz-phase" style="display:none;">
-        <!-- 顶部进度�?+ 计时�?-->
+        <!-- 顶部进度条 + 计时器 -->
         <div class="quiz-progress-header">
           <div class="qph-left">
             <span class="qph-label">题目进度</span>
@@ -252,7 +255,7 @@
 
         <!-- 当前题目卡片 -->
         <div class="quiz-question-card" id="quiz-question-card">
-          <!-- JS 动态渲染题目内�?-->
+          <!-- JS 动态渲染题目内容 -->
         </div>
 
         <!-- 底部导航按钮 -->
@@ -263,9 +266,11 @@
           <div class="quiz-nav-arrows">
             <button class="btn btn-secondary btn-nav" id="btn-q-prev" disabled>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-              上一�?            </button>
+              上一题
+            </button>
             <button class="btn btn-primary btn-nav" id="btn-q-next">
-              下一�?              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              下一题
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
             <button class="btn btn-gold btn-nav" id="btn-q-submit" style="display:none;">
               提交答卷
@@ -274,7 +279,7 @@
         </div>
       </div>
 
-      <!-- ════════�?阶段3：看结果 ════════�?-->
+      <!-- ═════════ 阶段3：看结果 ═════════ -->
       <div id="quiz-phase-result" class="quiz-phase" style="display:none;">
 
         <!-- 分数圆环 + 统计摘要 -->
@@ -287,29 +292,29 @@
             </svg>
             <div class="ring-score-text" id="ring-score-text">
               <span class="ring-score-num" id="ring-score-num">0</span>
-              <span class="ring-score-unit">�?/span>
+              <span class="ring-score-unit">分</span>
             </div>
           </div>
           <div class="result-stats-grid">
             <div class="result-stat-item rs-correct">
-              <div class="rs-icon">�?/div>
+              <div class="rs-icon">✓</div>
               <div class="rs-value" id="rs-correct">0</div>
               <div class="rs-label">答对</div>
             </div>
             <div class="result-stat-item rs-wrong">
-              <div class="rs-icon">�?/div>
+              <div class="rs-icon">✗</div>
               <div class="rs-value" id="rs-wrong">0</div>
               <div class="rs-label">答错</div>
             </div>
             <div class="result-stat-item rs-time">
-              <div class="rs-icon">�?/div>
+              <div class="rs-icon">⏱</div>
               <div class="rs-value" id="rs-time">00:00</div>
               <div class="rs-label">用时</div>
             </div>
             <div class="result-stat-item rs-rate">
               <div class="rs-icon">%</div>
               <div class="rs-value" id="rs-rate">0%</div>
-              <div class="rs-label">正确�?/div>
+              <div class="rs-label">正确率</div>
             </div>
           </div>
         </div>
@@ -333,12 +338,12 @@
                   <th>资料</th>
                   <th>题数</th>
                   <th>得分</th>
-                  <th>正确�?/th>
+                  <th>正确率</th>
                   <th>用时</th>
                 </tr>
               </thead>
               <tbody id="qh-tbody">
-                <!-- JS 动态渲�?-->
+                <!-- JS 动态渲染 -->
               </tbody>
             </table>
           </div>
@@ -347,10 +352,11 @@
           </div>
         </div>
 
-        <!-- 再来一次按�?-->
+        <!-- 再来一次按钮 -->
         <div class="result-footer">
           <button class="btn btn-primary btn-lg" id="btn-retry-quiz">
-            🔄 再测一�?          </button>
+            🔄 再测一次
+          </button>
         </div>
       </div>
     </section>
@@ -363,7 +369,7 @@
         <p class="page-subtitle">追踪每个知识点的掌握情况</p>
       </div>
 
-      <!-- ══ �?顶排统计卡片�?个） ══ -->
+      <!-- ══ ① 顶排统计卡片（5个） ══ -->
       <div class="pg-stats-row">
         <div class="pg-stat-card">
           <div class="pg-stat-icon" style="background:rgba(59,130,246,0.1);color:#60a5fa;">📄</div>
@@ -371,9 +377,9 @@
           <div class="pg-stat-label">资料总数</div>
         </div>
         <div class="pg-stat-card">
-          <div class="pg-stat-icon" style="background:rgba(34,197,94,0.1);color:#4ade80;">�?/div>
+          <div class="pg-stat-icon" style="background:rgba(34,197,94,0.1);color:#4ade80;">✓</div>
           <div class="pg-stat-value" id="pg-mastered">0</div>
-          <div class="pg-stat-label">已掌�?/div>
+          <div class="pg-stat-label">已掌握</div>
         </div>
         <div class="pg-stat-card">
           <div class="pg-stat-icon" style="background:rgba(168,85,247,0.1);color:#c084fc;">📝</div>
@@ -381,26 +387,26 @@
           <div class="pg-stat-label">学习次数</div>
         </div>
         <div class="pg-stat-card">
-          <div class="pg-stat-icon" style="background:rgba(201,162,39,0.15);color:var(--gold);">�?/div>
+          <div class="pg-stat-icon" style="background:rgba(201,162,39,0.15);color:var(--gold);">★</div>
           <div class="pg-stat-value" id="pg-avg-score">--</div>
-          <div class="pg-stat-label">平均�?/div>
+          <div class="pg-stat-label">平均分</div>
         </div>
         <div class="pg-stat-card">
-          <div class="pg-stat-icon" style="background:rgba(239,68,68,0.1);color:#f87171;">�?/div>
+          <div class="pg-stat-icon" style="background:rgba(239,68,68,0.1);color:#f87171;">⚠</div>
           <div class="pg-stat-value" id="pg-weak-count">0</div>
-          <div class="pg-stat-label">薄弱�?/div>
+          <div class="pg-stat-label">薄弱点</div>
         </div>
       </div>
 
-      <!-- ══ �?雷达图（左）+ 知识点列表（右） ══ -->
+      <!-- ══ ② 雷达图（左）+ 知识点列表（右） ══ -->
       <div class="pg-main-grid">
 
-        <!-- 左：雷达�?-->
+        <!-- 左：雷达图 -->
         <div class="pg-radar-section">
-          <div class="section-title">知识点掌握分�?/div>
+          <div class="section-title">知识点掌握分布</div>
           <div class="pg-radar-wrap">
             <svg id="pg-radar-svg" viewBox="0 0 320 320" class="pg-radar-svg">
-              <!-- JS 动态绘制：背景网格 + 数据多边�?+ 轴线 + 标签 -->
+              <!-- JS 动态绘制：背景网格 + 数据多边形 + 轴线 + 标签 -->
             </svg>
           </div>
           <div class="pg-radar-legend">
@@ -408,17 +414,17 @@
           </div>
         </div>
 
-        <!-- 右：知识点进度列�?-->
+        <!-- 右：知识点进度列表 -->
         <div class="pg-kp-list-section">
-          <div class="section-title">各维度详�?/div>
+          <div class="section-title">各维度详情</div>
           <div class="pg-kp-list" id="pg-kp-list">
-            <!-- JS 动态渲染知识点�?-->
+            <!-- JS 动态渲染知识点行 -->
           </div>
         </div>
 
       </div>
 
-      <!-- ══ �?每份资料详情（笔记区�?══ -->
+      <!-- ══ ③ 每份资料详情（笔记区） ══ -->
       <div class="pg-materials-section">
         <div class="section-title">📋 资料学习详情</div>
         <div class="pg-mat-list" id="pg-mat-list">
@@ -426,10 +432,11 @@
         </div>
       </div>
 
-      <!-- ══ �?薄弱点单独列�?══ -->
+      <!-- ══ ④ 薄弱点单独列出 ══ -->
       <div class="pg-weak-section" id="pg-weak-section" style="display:none;">
         <div class="section-title" style="color:var(--error);">
-          �?薄弱知识�?          <span class="pg-weak-hint" id="pg-weak-hint"></span>
+          ⚠ 薄弱知识点
+          <span class="pg-weak-hint" id="pg-weak-hint"></span>
         </div>
         <div class="pg-weak-list" id="pg-weak-list">
           <!-- JS 动态渲染薄弱点卡片 -->
@@ -438,14 +445,14 @@
     </section>
 
 
-    <!-- ===== 页面5: 报告（学习周报生成器�?===== -->
+    <!-- ===== 页面5: 报告（学习周报生成器） ===== -->
     <section class="page page-report" data-page="report">
       <div class="page-header">
         <h1 class="page-title">学习周报</h1>
         <p class="page-subtitle">AI 自动汇总学习数据，生成个性化报告</p>
       </div>
 
-      <!-- ══ �?日期范围选择 + 生成按钮 ══ -->
+      <!-- ══ ① 日期范围选择 + 生成按钮 ══ -->
       <div class="rp-control-bar">
         <div class="rp-date-group">
           <!-- 快捷选项 -->
@@ -454,10 +461,10 @@
             <button class="rp-quick-btn" data-range="month">本月</button>
             <button class="rp-quick-btn" data-range="all">全部</button>
           </div>
-          <!-- 自定义日�?-->
+          <!-- 自定义日期 -->
           <div class="rp-custom-dates">
             <input type="date" id="rp-start-date" class="rp-date-input">
-            <span class="rp-date-sep">�?/span>
+            <span class="rp-date-sep">至</span>
             <input type="date" id="rp-end-date" class="rp-date-input">
           </div>
         </div>
@@ -467,7 +474,7 @@
         </button>
       </div>
 
-      <!-- ══ �?报告内容展示区（生成后显示） ══ -->
+      <!-- ══ ② 报告内容展示区（生成后显示） ══ -->
       <div class="rp-output-area" id="rp-output-area" style="display:none;">
 
         <!-- 报告头部信息 -->
@@ -487,7 +494,7 @@
             </div>
           </div>
 
-          <!-- 报告正文：分区排�?-->
+          <!-- 报告正文：分区排版 -->
           <div class="rp-card-body" id="rp-card-body">
             <!-- JS 动态渲染：概览 / 学习内容 / 薄弱分析 / 建议 -->
           </div>
@@ -495,14 +502,14 @@
 
       </div>
 
-      <!-- ══ �?历史报告列表 ══ -->
+      <!-- ══ ③ 历史报告列表 ══ -->
       <div class="rp-history-section">
         <div class="section-title">历史报告</div>
         <div class="rp-history-list" id="rp-history-list">
-          <!-- JS 动态渲染历史报告卡�?-->
+          <!-- JS 动态渲染历史报告卡片 -->
           <div class="rp-empty-hint" id="rp-empty-hint">
             <p>还没有生成过报告</p>
-            <p style="font-size:12px;color:var(--text-muted);margin-top:6px;">选择日期范围后点击「生成报告�?/p>
+            <p style="font-size:12px;color:var(--text-muted);margin-top:6px;">选择日期范围后点击「生成报告」</p>
           </div>
         </div>
       </div>
@@ -517,12 +524,12 @@
 
 
 <!-- JS：按依赖顺序引入 -->
-<script src="/static/api.js?t={{ version }}"></script>
-<script src="/static/materials.js?t={{ version }}"></script>
-<script src="/static/quiz.js?t={{ version }}"></script>
-<script src="/static/progress.js?t={{ version }}"></script>
-<script src="/static/report.js?t={{ version }}"></script>
-<script src="/static/chat.js?t={{ version }}"></script>
-<script src="/static/app.js?t={{ version }}"></script>
+<script src="/static/api.js?v=2"></script>
+<script src="/static/materials.js?v=2"></script>
+<script src="/static/quiz.js?v=2"></script>
+<script src="/static/progress.js?v=2"></script>
+<script src="/static/report.js?v=2"></script>
+<script src="/static/chat.js?v=2"></script>
+<script src="/static/app.js?v=2"></script>
 </body>
 </html>

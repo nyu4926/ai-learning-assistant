@@ -1,7 +1,6 @@
-﻿"""Flask 应用入口 — app factory 模式"""
+"""Flask 应用入口 — app factory 模式"""
 
 import os
-import time
 import click
 
 from flask import Flask, jsonify, render_template, send_from_directory
@@ -20,7 +19,7 @@ def create_app(config_name=None):
     app = Flask(__name__)
     app.config.from_object(config_map[config_name])
 
-    # CORS
+    # CORS — 允许前端开发服务器跨域访问
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     # 初始化扩展
@@ -46,10 +45,26 @@ def create_app(config_name=None):
 
     # ========== 前端页面路由 ==========
 
+    # 调试：查看环境变量
+    @app.route("/api/debug", methods=["GET"])
+    def debug():
+        import os as _os
+        from pathlib import Path as _Path
+        env_path = _Path(__file__).resolve().parent / ".env"
+        return jsonify({
+            "LLM_API_KEY_exists": bool(_os.getenv("LLM_API_KEY")),
+            "LLM_API_KEY_len": len(_os.getenv("LLM_API_KEY", "")),
+            "LLM_API_KEY_prefix": _os.getenv("LLM_API_KEY", "")[:8] + "..." if _os.getenv("LLM_API_KEY") else "EMPTY",
+            "LLM_API_BASE": _os.getenv("LLM_API_BASE", "default"),
+            "FLASK_ENV": _os.getenv("FLASK_ENV", "not set"),
+            "dotenv_file_exists": env_path.exists(),
+            "dotenv_file_size": env_path.stat().st_size if env_path.exists() else 0,
+        })
+
     @app.route("/")
     def index():
         """首页"""
-        return render_template("index.html", version=int(time.time()))
+        return render_template("index.html")
 
     @app.route("/static/<path:filename>")
     def static_files(filename):
@@ -62,7 +77,7 @@ def create_app(config_name=None):
     def init_db():
         """创建所有数据库表"""
         with app.app_context():
-            from models import (
+            from models import (  # noqa: F401
                 Material,
                 ChatSession,
                 ChatMessage,
@@ -72,14 +87,14 @@ def create_app(config_name=None):
                 WeeklyReport,
             )
             db.create_all()
-            click.echo("数据库表已创建")
+            click.echo("✔ 数据库表已创建")
 
-    # 确保 instance 目录存在并自动创建数据库表
+    # 确保 instance 目录存在并自动创建数据库表（首次部署无需手动 init-db）
     with app.app_context():
         instance_dir = os.path.join(app.root_path, "instance")
         os.makedirs(instance_dir, exist_ok=True)
 
-        from models import (
+        from models import (  # noqa: F401
             Material,
             ChatSession,
             ChatMessage,
