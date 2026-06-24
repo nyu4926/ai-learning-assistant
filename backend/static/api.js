@@ -192,7 +192,7 @@ const API = (() => {
     try {
       const res = await fetch(`${BASE_URL}/api/health`, {
         method: 'GET',
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(15000),
       });
       return res.ok;
     } catch {
