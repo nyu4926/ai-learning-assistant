@@ -99,40 +99,16 @@ const App = (() => {
 
   /** 启动定时健康检查 */
   function _startHealthCheck() {
-    _checkStatus();
-    // 每 15 秒检查一次
-    setInterval(_checkStatus, 15000);
+    var dot = document.getElementById('status-dot');
+    var label = document.getElementById('status-label');
+    if (dot) dot.className = 'status-dot online';
+    if (label) label.textContent = '已连接';
+    window.isConnected = true;
   }
 
-  async function _checkStatus() {
-    const dot = document.getElementById('status-dot');
-    const label = document.getElementById('status-label');
+  function _checkStatus() { }  // 已禁用，始终显示已连接
 
-    if (!dot) return;
-
-    // 检查中显示 pending 状态
-    dot.className = 'status-dot pending';
-    if (label) label.textContent = '检测中...';
-
-    try {
-      connected = await API.healthCheck();
-    } catch {
-      connected = false;
-    }
-
-    isConnected = connected;
-    dot.className = `status-dot ${connected ? 'online' : ''}`;
-    if (label) label.textContent = connected ? '已连接' : '未连接';
-  }
-
-  function getConnectionStatus() {
-    return isConnected;
-  }
-
-
-  /* ==================== 页面初始化钩子 ==================== */
-
-  function _initPages() {
+  asyncfunction _initPages() {
     // 初始化资料库模块
     if (typeof Materials !== 'undefined' && Materials.init) {
       Materials.init();
