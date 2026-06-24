@@ -1,4 +1,4 @@
-﻿"""配置类 — 从 .env 读取环境变量"""
+"""配置类 — 从 .env 读取环境变量"""
 
 import os
 from pathlib import Path
@@ -8,7 +8,9 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent
 
 # 加载 .env（项目根目录）
-load_dotenv(BASE_DIR / ".env")
+# 本地开发加载 .env，Railway 等云平台用容器环境变量
+if not os.getenv("RAILWAY_ENVIRONMENT") and not os.getenv("RENDER"):
+    load_dotenv(BASE_DIR / ".env")
 
 
 class Config:
