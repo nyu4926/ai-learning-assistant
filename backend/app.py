@@ -1,4 +1,4 @@
-"""Flask Ó¦ÓÃÈë¿Ú ¡ª app factory Ä£Ê½"""
+ï»¿"""Flask åº”ç”¨å…¥å£ â€” app factory æ¨¡å¼"""
 
 import os
 import time
@@ -12,7 +12,7 @@ from extensions import db
 
 
 def create_app(config_name=None):
-    """´´½¨ Flask Ó¦ÓÃÊµÀı"""
+    """åˆ›å»º Flask åº”ç”¨å®ä¾‹"""
 
     if config_name is None:
         config_name = os.getenv("FLASK_ENV", "development")
@@ -20,13 +20,13 @@ def create_app(config_name=None):
     app = Flask(__name__)
     app.config.from_object(config_map[config_name])
 
-    # CORS ¡ª ÔÊĞíÇ°¶Ë¿ª·¢·şÎñÆ÷¿çÓò·ÃÎÊ
+    # CORS
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-    # ³õÊ¼»¯À©Õ¹
+    # åˆå§‹åŒ–æ‰©å±•
     db.init_app(app)
 
-    # ×¢²áÀ¶Í¼
+    # æ³¨å†Œè“å›¾
     from routes.materials import materials_bp
     from routes.chat import chat_bp
     from routes.quiz import quiz_bp
@@ -39,24 +39,24 @@ def create_app(config_name=None):
     app.register_blueprint(progress_bp)
     app.register_blueprint(report_bp)
 
-    # ½¡¿µ¼ì²é½Ó¿Ú
+    # å¥åº·æ£€æŸ¥æ¥å£
     @app.route("/api/health", methods=["GET"])
     def health():
         return jsonify({"code": 0, "message": "ok", "data": {"status": "running"}})
 
-    # ========== Ç°¶ËÒ³ÃæÂ·ÓÉ ==========
+    # ========== å‰ç«¯é¡µé¢è·¯ç”± ==========
 
     @app.route("/")
     def index():
-        """Ê×Ò³ ¡ª Ã¿´Î¼ÓÔØÉú³ÉĞÂÊ±¼ä´Á£¬Ç¿ÖÆä¯ÀÀÆ÷»ñÈ¡×îĞÂ JS/CSS"""
+        """é¦–é¡µ â€” æ¯æ¬¡åŠ è½½ç”Ÿæˆæ–°æ—¶é—´æˆ³ï¼Œå¼ºåˆ¶æµè§ˆå™¨è·å–æœ€æ–° JS/CSS"""
         return render_template("index.html", version=int(time.time()))
 
     @app.route("/static/<path:filename>")
     def static_files(filename):
-        """¾²Ì¬ÎÄ¼ş (JS/CSS)"""
+        """é™æ€æ–‡ä»¶ (JS/CSS)"""
         return send_from_directory("static", filename)
 
-    # ½ûÖ¹¾²Ì¬ JS/CSS ÎÄ¼ş»º´æ
+    # ç¦æ­¢é™æ€æ–‡ä»¶ç¼“å­˜
     @app.after_request
     def add_no_cache_headers(response):
         if request.path.startswith("/static/"):
@@ -65,11 +65,11 @@ def create_app(config_name=None):
             response.headers["Expires"] = "0"
         return response
 
-    # ========== CLI ÃüÁî ==========
+    # ========== CLI å‘½ä»¤ ==========
 
     @app.cli.command("init-db")
     def init_db():
-        """´´½¨ËùÓĞÊı¾İ¿â±í"""
+        """åˆ›å»ºæ‰€æœ‰æ•°æ®åº“è¡¨"""
         with app.app_context():
             from models import (
                 Material,
@@ -81,9 +81,9 @@ def create_app(config_name=None):
                 WeeklyReport,
             )
             db.create_all()
-            click.echo("? Êı¾İ¿â±íÒÑ´´½¨")
+            click.echo("æ•°æ®åº“è¡¨å·²åˆ›å»º")
 
-    # È·±£ instance Ä¿Â¼´æÔÚ²¢×Ô¶¯´´½¨Êı¾İ¿â±í£¨Ê×´Î²¿ÊğÎŞĞèÊÖ¶¯ init-db£©
+    # ç¡®ä¿ instance ç›®å½•å­˜åœ¨å¹¶è‡ªåŠ¨åˆ›å»ºæ•°æ®åº“è¡¨
     with app.app_context():
         instance_dir = os.path.join(app.root_path, "instance")
         os.makedirs(instance_dir, exist_ok=True)
@@ -101,7 +101,7 @@ def create_app(config_name=None):
 
     return app
 
-# Ö±½ÓÔËĞĞÈë¿Ú
+# ç›´æ¥è¿è¡Œå…¥å£
 if __name__ == "__main__":
     app = create_app()
     app.run(host="0.0.0.0", port=5000, debug=True)
