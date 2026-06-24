@@ -1,5 +1,9 @@
 ﻿{
   "build": {
     "builder": "DOCKERFILE"
+  },
+  "deploy": {
+    "healthcheckPath": "/api/health",
+    "healthcheckTimeout": 30
   }
 }

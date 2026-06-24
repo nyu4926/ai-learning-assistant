@@ -13,6 +13,6 @@ COPY backend/ .
 
 RUN mkdir -p instance uploads chroma_data
 
-EXPOSE 5000
+EXPOSE 8000
 
-CMD gunicorn --bind "0.0.0.0:${PORT:-5000}" --workers 1 --threads 2 --timeout 120 "app:create_app()"
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "1", "--threads", "2", "--timeout", "120", "app:create_app()"]
