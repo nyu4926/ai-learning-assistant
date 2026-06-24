@@ -106,9 +106,36 @@ const App = (() => {
     window.isConnected = true;
   }
 
-  function _checkStatus() { }  // 已禁用，始终显示已连接
+  function _checkStatus() { }  // disabled
+  async function _checkStatus() {
+    const dot = document.getElementById('status-dot');
+    const label = document.getElementById('status-label');
 
-  asyncfunction _initPages() {
+    if (!dot) return;
+
+    // 检查中显示 pending 状态
+    dot.className = 'status-dot pending';
+    if (label) label.textContent = '检测中...';
+
+    try {
+      connected = await API.healthCheck();
+    } catch {
+      connected = false;
+    }
+
+    isConnected = connected;
+    dot.className = `status-dot ${connected ? 'online' : ''}`;
+    if (label) label.textContent = connected ? '已连接' : '未连接';
+  }
+
+  function getConnectionStatus() {
+    return isConnected;
+  }
+
+
+  /* ==================== 页面初始化钩子 ==================== */
+
+  function _initPages() {
     // 初始化资料库模块
     if (typeof Materials !== 'undefined' && Materials.init) {
       Materials.init();
