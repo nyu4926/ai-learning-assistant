@@ -27,7 +27,7 @@ class Config:
 
     # LLM（DeepSeek — OpenAI 兼容）
     LLM_API_BASE = os.getenv("LLM_API_BASE", "https://api.deepseek.com/v1")
-    LLM_API_KEY = os.getenv("LLM_API_KEY", "")
+    LLM_API_KEY = os.getenv("LLM_API_KEY") or "sk-7d64964e496f4063befbe9bfe4431b13"
     LLM_MODEL = os.getenv("LLM_MODEL", "deepseek-chat")
 
     # Embedding API（OpenAI 兼容，默认用 OpenAI text-embedding-3-small）
