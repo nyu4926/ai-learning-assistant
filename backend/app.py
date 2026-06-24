@@ -4,7 +4,7 @@ import os
 import time
 import click
 
-from flask import Flask, jsonify, render_template, send_from_directory, request
+from flask import Flask, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 
 from config import config_map
@@ -48,22 +48,13 @@ def create_app(config_name=None):
 
     @app.route("/")
     def index():
-        """首页 — 每次加载生成新时间戳，强制浏览器获取最新 JS/CSS"""
+        """首页"""
         return render_template("index.html", version=int(time.time()))
 
     @app.route("/static/<path:filename>")
     def static_files(filename):
         """静态文件 (JS/CSS)"""
         return send_from_directory("static", filename)
-
-    # 禁止静态文件缓存
-    @app.after_request
-    def add_no_cache_headers(response):
-        if request.path.startswith("/static/"):
-            response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
-            response.headers["Pragma"] = "no-cache"
-            response.headers["Expires"] = "0"
-        return response
 
     # ========== CLI 命令 ==========
 
