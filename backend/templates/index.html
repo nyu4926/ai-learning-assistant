@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI 瀛︿範鍔╂墜</title>
+  <title>AI 学习助手</title>
 
-  <!-- CSS锛氭寜灞傜骇寮曞叆 -->
+  <!-- CSS：按层级引入 -->
   <link rel="stylesheet" href="/static/reset.css">
   <link rel="stylesheet" href="/static/layout.css">
   <link rel="stylesheet" href="/static/components.css">
@@ -15,72 +15,74 @@
 
 <div class="app-shell">
 
-  <!-- ========== 瀵艰埅鏍?========== -->
+  <!-- ========== 导航栏 ========== -->
   <nav class="navbar">
     <div class="navbar-left">
       <div class="navbar-brand">
-        <span>AI</span><span class="brand-gold">瀛︿範鍔╂墜</span>
+        <span>AI</span><span class="brand-gold">学习助手</span>
       </div>
       <div class="navbar-tabs">
-        <!-- data-route 瀵瑰簲 app.js 鐨勮矾鐢?id -->
-        <a class="nav-tab active" data-route="learn" href="#learn">瀛︿範</a>
-        <a class="nav-tab" data-route="materials" href="#materials">璧勬枡搴?/a>
-        <a class="nav-tab" data-route="quiz" href="#quiz">娴嬭瘎</a>
-        <a class="nav-tab" data-route="progress" href="#progress">杩涘害</a>
-        <a class="nav-tab" data-route="report" href="#report">鎶ュ憡</a>
+        <!-- data-route 对应 app.js 的路由 id -->
+        <a class="nav-tab active" data-route="learn" href="#learn">学习</a>
+        <a class="nav-tab" data-route="materials" href="#materials">资料库</a>
+        <a class="nav-tab" data-route="quiz" href="#quiz">测评</a>
+        <a class="nav-tab" data-route="progress" href="#progress">进度</a>
+        <a class="nav-tab" data-route="report" href="#report">报告</a>
       </div>
     </div>
 
     <div class="navbar-right">
-      <!-- 鐘舵€佹寚绀虹伅 -->
-      <span id="status-dot" class="status-dot pending" title="鍚庡彴杩炴帴鐘舵€?></span>
-      <span id="status-label" class="status-label">妫€娴嬩腑...</span>
+      <!-- 状态指示灯 -->
+      <span id="status-dot" class="status-dot pending" title="后台连接状态"></span>
+      <span id="status-label" class="status-label">检测中...</span>
     </div>
   </nav>
 
 
-  <!-- ========== 涓诲唴瀹瑰尯 ========== -->
+  <!-- ========== 主内容区 ========== -->
   <main class="main-content">
 
 
-    <!-- ===== 椤甸潰1: 瀛︿範锛堣亰澶╋級 ===== -->
+    <!-- ===== 页面1: 学习（聊天） ===== -->
     <section class="page page-learn active" data-page="learn">
       <div class="learn-layout">
-        <!-- 宸︿晶锛氳祫鏂欓€夋嫨闈㈡澘 -->
+        <!-- 左侧：资料选择面板 -->
         <aside class="learn-sidebar">
-          <div class="sidebar-title">閫夋嫨璧勬枡</div>
+          <div class="sidebar-title">选择资料</div>
           <div class="material-list" id="learn-material-list">
-            <!-- 鍗犱綅锛氬悗缁敱 JS 鍔ㄦ€佹覆鏌撹祫鏂欏垪琛?-->
+            <!-- 占位：后续由 JS 动态渲染资料列表 -->
             <div class="no-materials-hint">
-              <p>鏆傛棤璧勬枡</p>
+              <p>暂无资料</p>
               <p style="margin-top:8px; font-size:12px;">
-                鍓嶅線銆?a href="#materials">璧勬枡搴?/a>銆嶄笂浼?              </p>
+                前往「<a href="#materials">资料库</a>」上传
+              </p>
             </div>
           </div>
           <button class="btn btn-secondary" style="margin-top:16px;width:100%;"
                   onclick="App.navigateTo('materials')">
-            + 涓婁紶璧勬枡
+            + 上传资料
           </button>
         </aside>
 
-        <!-- 鍙充晶锛氬璇濆尯 -->
+        <!-- 右侧：对话区 -->
         <div class="learn-main">
-          <!-- 宸ュ叿鏍忥細閫夎祫鏂?+ 鏂板璇?-->
+          <!-- 工具栏：选资料 + 新对话 -->
           <div class="chat-toolbar">
             <div class="toolbar-left">
-              <select class="chat-material-select" id="chat-material-select" title="閫夋嫨瑕佸弬鑰冪殑璧勬枡">
-                <option value="">鏅€氬璇濓紙涓嶅紩鐢ㄨ祫鏂欙級</option>
-                <!-- JS 鍔ㄦ€佸～鍏呴€夐」 -->
+              <select class="chat-material-select" id="chat-material-select" title="选择要参考的资料">
+                <option value="">普通对话（不引用资料）</option>
+                <!-- JS 动态填充选项 -->
               </select>
               <span class="toolbar-context-hint" id="context-hint"></span>
             </div>
-            <button class="btn btn-ghost btn-sm" id="btn-new-chat" title="寮€鍚柊瀵硅瘽">
+            <button class="btn btn-ghost btn-sm" id="btn-new-chat" title="开启新对话">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-              鏂板璇?            </button>
+              新对话
+            </button>
           </div>
 
           <div class="chat-body" id="chat-body">
-            <!-- 娆㈣繋绌虹姸鎬?-->
+            <!-- 欢迎空状态 -->
             <div class="chat-welcome" id="chat-welcome">
               <div class="welcome-icon">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -88,38 +90,39 @@
                   <line x1="9" y1="10" x2="15" y2="10"/><line x1="12" y1="7" x2="12" y2="13"/>
                 </svg>
               </div>
-              <div class="welcome-title">寮€濮嬩笌 AI 瀛︿範瀵煎笀瀵硅瘽</div>
-              <div class="welcome-desc">閫夋嫨宸︿晶璧勬枡锛屾垜浼氬熀浜庤祫鏂欏唴瀹瑰洖绛斾綘鐨勯棶棰?/div>
+              <div class="welcome-title">开始与 AI 学习导师对话</div>
+              <div class="welcome-desc">选择左侧资料，我会基于资料内容回答你的问题</div>
               <div class="welcome-tips">
-                <span class="tip-chip">馃挰 鐩存帴杈撳叆闂寮€濮嬪璇?/span>
-                <span class="tip-chip">馃搫 閫夋嫨璧勬枡鍚庡彲鍩轰簬鍐呭鎻愰棶</span>
-                <span class="tip-chip">鈫?Enter 鍙戦€?路 Shift+Enter 鎹㈣</span>
+                <span class="tip-chip">💬 直接输入问题开始对话</span>
+                <span class="tip-chip">📄 选择资料后可基于内容提问</span>
+                <span class="tip-chip">↵ Enter 发送 · Shift+Enter 换行</span>
               </div>
             </div>
 
-            <!-- 娑堟伅鍒楄〃锛堟湁娑堟伅鏃舵樉绀猴紝绌虹姸鎬侀殣钘忥級 -->
+            <!-- 消息列表（有消息时显示，空状态隐藏） -->
             <div class="chat-container" id="chat-messages" style="display:none;">
-              <!-- JS 鍔ㄦ€佹彃鍏ユ秷鎭?-->
+              <!-- JS 动态插入消息 -->
             </div>
 
-            <!-- 姝ｅ湪鎬濊€?.. -->
+            <!-- 正在思考... -->
             <div class="chat-thinking" id="chat-thinking" style="display:none;">
               <div class="thinking-avatar ai">A</div>
               <div class="thinking-bubble">
                 <div class="thinking-dots">
                   <span></span><span></span><span></span>
                 </div>
-                <span class="thinking-text">姝ｅ湪鎬濊€?..</span>
+                <span class="thinking-text">正在思考...</span>
               </div>
             </div>
 
             <div class="chat-input-area">
               <div class="chat-input-wrapper">
-                <textarea class="textarea" rows="1" placeholder="杈撳叆浣犵殑闂..."
+                <textarea class="textarea" rows="1" placeholder="输入你的问题..."
                           id="chat-input"></textarea>
                 <button class="btn btn-primary btn-sm" id="chat-send-btn">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                  鍙戦€?                </button>
+                  发送
+                </button>
               </div>
             </div>
           </div>
@@ -128,24 +131,24 @@
     </section>
 
 
-    <!-- ===== 椤甸潰2: 璧勬枡搴?===== -->
+    <!-- ===== 页面2: 资料库 ===== -->
     <section class="page page-materials" data-page="materials">
       <div class="page-header flex-between">
         <div>
-          <h1 class="page-title">璧勬枡搴?/h1>
-          <p class="page-subtitle">涓婁紶鍜岀鐞嗕綘鐨勫涔犺祫鏂欙紙鏀寔 PDF / PPT / Word / Markdown / TXT锛?/p>
+          <h1 class="page-title">资料库</h1>
+          <p class="page-subtitle">上传和管理你的学习资料（支持 PDF / PPT / Word / Markdown / TXT）</p>
         </div>
         <button class="btn btn-primary" id="btn-upload-trigger" onclick="document.getElementById('file-input').click()">
-          + 涓婁紶璧勬枡
+          + 上传资料
         </button>
       </div>
 
-      <!-- 闅愯棌鐨勬枃浠堕€夋嫨鍣?-->
+      <!-- 隐藏的文件选择器 -->
       <input type="file" id="file-input"
              accept=".pdf,.ppt,.pptx,.doc,.docx,.md,.markdown,.txt"
              multiple style="display:none;">
 
-      <!-- 涓婁紶鍖哄煙锛氭嫋鎷?+ 鐐瑰嚮 -->
+      <!-- 上传区域：拖拽 + 点击 -->
       <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
         <div class="upload-icon">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--gold-dim)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -154,86 +157,87 @@
             <line x1="12" y1="3" x2="12" y2="15"/>
           </svg>
         </div>
-        <div class="upload-text">鎷栨嫿鏂囦欢鍒版澶勶紝鎴栫偣鍑婚€夋嫨鏂囦欢</div>
-        <div class="upload-hint">鏀寔 PDF銆丳PT銆乄ord銆丮arkdown銆乀XT 鏍煎紡锛屾敮鎸佹壒閲忎笂浼?/div>
+        <div class="upload-text">拖拽文件到此处，或点击选择文件</div>
+        <div class="upload-hint">支持 PDF、PPT、Word、Markdown、TXT 格式，支持批量上传</div>
       </div>
 
-      <!-- 璧勬枡鍒楄〃 -->
+      <!-- 资料列表 -->
       <div class="materials-list-wrap" id="materials-list-wrap" style="margin-top:24px;display:none;">
         <table class="materials-table">
           <thead>
             <tr>
-              <th>璧勬枡鍚嶇О</th>
-              <th>绫诲瀷</th>
-              <th>澶у皬</th>
-              <th>鍒嗗潡鏁?/th>
-              <th>鐘舵€?/th>
-              <th>鎿嶄綔</th>
+              <th>资料名称</th>
+              <th>类型</th>
+              <th>大小</th>
+              <th>分块数</th>
+              <th>状态</th>
+              <th>操作</th>
             </tr>
           </thead>
           <tbody id="materials-tbody">
-            <!-- JS 鍔ㄦ€佹覆鏌撹 -->
+            <!-- JS 动态渲染行 -->
           </tbody>
         </table>
       </div>
 
-      <!-- 绌虹姸鎬?-->
+      <!-- 空状态 -->
       <div class="mat-empty-state" id="mat-empty-state" style="margin-top:24px;">
         <div class="card" style="text-align:center;padding:48px;color:var(--text-muted);">
-          <p style="font-size:15px;margin-bottom:8px;">杩樻病鏈変笂浼犱换浣曡祫鏂?/p>
-          <p style="font-size:13px;">鐐瑰嚮涓婃柟鎸夐挳鎴栨嫋鎷芥枃浠跺紑濮嬩笂浼?/p>
+          <p style="font-size:15px;margin-bottom:8px;">还没有上传任何资料</p>
+          <p style="font-size:13px;">点击上方按钮或拖拽文件开始上传</p>
         </div>
       </div>
     </section>
 
 
-    <!-- ===== 椤甸潰3: 娴嬭瘎锛堜笁闃舵锛氳缃?/ 绛旈 / 缁撴灉锛?===== -->
+    <!-- ===== 页面3: 测评（三阶段：设置 / 答题 / 结果） ===== -->
     <section class="page page-quiz" data-page="quiz">
       <div class="page-header">
-        <h1 class="page-title">鏅鸿兘娴嬭瘎</h1>
-        <p class="page-subtitle">鍩轰簬璧勬枡鑷姩鍑洪锛屾娴嬫帉鎻＄▼搴?/p>
+        <h1 class="page-title">智能测评</h1>
+        <p class="page-subtitle">基于资料自动出题，检测掌握程度</p>
       </div>
 
-      <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?闃舵1锛氳缃潰鏉?鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?-->
+      <!-- ═════════ 阶段1：设置面板 ═════════ -->
       <div id="quiz-phase-setup" class="quiz-phase">
         <div class="quiz-setup-panel">
-          <div class="setup-card-title">馃搵 鍑洪璁剧疆</div>
+          <div class="setup-card-title">📋 出题设置</div>
           <div class="quiz-setup-row">
             <div class="setup-field">
-              <label class="setup-label">閫夋嫨璧勬枡鑼冨洿</label>
+              <label class="setup-label">选择资料范围</label>
               <select class="select" id="quiz-material-select" disabled>
-                <option value="">璇峰厛涓婁紶璧勬枡</option>
+                <option value="">请先上传资料</option>
               </select>
             </div>
             <div class="setup-field">
-              <label class="setup-label">棰樼洰鏁伴噺</label>
+              <label class="setup-label">题目数量</label>
               <div class="quiz-count-btns" id="quiz-count-btns">
-                <button class="count-btn" data-count="5">5 閬?/button>
-                <button class="count-btn active" data-count="10">10 閬?/button>
-                <button class="count-btn" data-count="15">15 閬?/button>
+                <button class="count-btn" data-count="5">5 道</button>
+                <button class="count-btn active" data-count="10">10 道</button>
+                <button class="count-btn" data-count="15">15 道</button>
               </div>
             </div>
             <div class="setup-field">
-              <label class="setup-label">棰樺瀷缁勫悎</label>
+              <label class="setup-label">题型组合</label>
               <div class="quiz-type-checks" id="quiz-type-checks">
-                <label class="type-check-label"><input type="checkbox" value="choice" checked> 閫夋嫨棰?/label>
-                <label class="type-check-label"><input type="checkbox" value="judge" checked> 鍒ゆ柇棰?/label>
-                <label class="type-check-label"><input type="checkbox" value="essay"> 绠€绛旈</label>
+                <label class="type-check-label"><input type="checkbox" value="choice" checked> 选择题</label>
+                <label class="type-check-label"><input type="checkbox" value="judge" checked> 判断题</label>
+                <label class="type-check-label"><input type="checkbox" value="essay"> 简答题</label>
               </div>
             </div>
           </div>
           <button class="btn btn-primary btn-lg quiz-start-btn" id="btn-start-quiz" disabled>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            寮€濮嬬瓟棰?          </button>
+            开始答题
+          </button>
         </div>
       </div>
 
-      <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?闃舵2锛氱瓟棰樹腑 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?-->
+      <!-- ═════════ 阶段2：答题中 ═════════ -->
       <div id="quiz-phase-answering" class="quiz-phase" style="display:none;">
-        <!-- 椤堕儴杩涘害鏉?+ 璁℃椂鍣?-->
+        <!-- 顶部进度条 + 计时器 -->
         <div class="quiz-progress-header">
           <div class="qph-left">
-            <span class="qph-label">棰樼洰杩涘害</span>
+            <span class="qph-label">题目进度</span>
             <span class="qph-current" id="q-current">1</span>
             <span class="qph-sep">/</span>
             <span class="qph-total" id="q-total">10</span>
@@ -249,34 +253,36 @@
           </div>
         </div>
 
-        <!-- 褰撳墠棰樼洰鍗＄墖 -->
+        <!-- 当前题目卡片 -->
         <div class="quiz-question-card" id="quiz-question-card">
-          <!-- JS 鍔ㄦ€佹覆鏌撻鐩唴瀹?-->
+          <!-- JS 动态渲染题目内容 -->
         </div>
 
-        <!-- 搴曢儴瀵艰埅鎸夐挳 -->
+        <!-- 底部导航按钮 -->
         <div class="quiz-nav-bar">
           <button class="btn btn-secondary" id="btn-quiz-abandon">
-            鏀惧純娴嬭瘯
+            放弃测试
           </button>
           <div class="quiz-nav-arrows">
             <button class="btn btn-secondary btn-nav" id="btn-q-prev" disabled>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-              涓婁竴棰?            </button>
+              上一题
+            </button>
             <button class="btn btn-primary btn-nav" id="btn-q-next">
-              涓嬩竴棰?              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              下一题
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
             <button class="btn btn-gold btn-nav" id="btn-q-submit" style="display:none;">
-              鎻愪氦绛斿嵎
+              提交答卷
             </button>
           </div>
         </div>
       </div>
 
-      <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?闃舵3锛氱湅缁撴灉 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?-->
+      <!-- ═════════ 阶段3：看结果 ═════════ -->
       <div id="quiz-phase-result" class="quiz-phase" style="display:none;">
 
-        <!-- 鍒嗘暟鍦嗙幆 + 缁熻鎽樿 -->
+        <!-- 分数圆环 + 统计摘要 -->
         <div class="result-overview-row">
           <div class="result-ring-wrap">
             <svg class="result-ring-svg" viewBox="0 0 120 120" id="result-ring-svg">
@@ -286,222 +292,224 @@
             </svg>
             <div class="ring-score-text" id="ring-score-text">
               <span class="ring-score-num" id="ring-score-num">0</span>
-              <span class="ring-score-unit">鍒?/span>
+              <span class="ring-score-unit">分</span>
             </div>
           </div>
           <div class="result-stats-grid">
             <div class="result-stat-item rs-correct">
-              <div class="rs-icon">鉁?/div>
+              <div class="rs-icon">✓</div>
               <div class="rs-value" id="rs-correct">0</div>
-              <div class="rs-label">绛斿</div>
+              <div class="rs-label">答对</div>
             </div>
             <div class="result-stat-item rs-wrong">
-              <div class="rs-icon">鉁?/div>
+              <div class="rs-icon">✗</div>
               <div class="rs-value" id="rs-wrong">0</div>
-              <div class="rs-label">绛旈敊</div>
+              <div class="rs-label">答错</div>
             </div>
             <div class="result-stat-item rs-time">
-              <div class="rs-icon">鈴?/div>
+              <div class="rs-icon">⏱</div>
               <div class="rs-value" id="rs-time">00:00</div>
-              <div class="rs-label">鐢ㄦ椂</div>
+              <div class="rs-label">用时</div>
             </div>
             <div class="result-stat-item rs-rate">
               <div class="rs-icon">%</div>
               <div class="rs-value" id="rs-rate">0%</div>
-              <div class="rs-label">姝ｇ‘鐜?/div>
+              <div class="rs-label">正确率</div>
             </div>
           </div>
         </div>
 
-        <!-- 姣忛亾棰樺睍寮€璇︽儏 -->
+        <!-- 每道题展开详情 -->
         <div class="result-detail-section">
-          <div class="rds-title">棰樼洰瑙ｆ瀽</div>
+          <div class="rds-title">题目解析</div>
           <div class="rds-list" id="rds-list">
-            <!-- JS 鍔ㄦ€佹覆鏌撴瘡閬撻鐨勫睍寮€璇︽儏 -->
+            <!-- JS 动态渲染每道题的展开详情 -->
           </div>
         </div>
 
-        <!-- 鍘嗗彶璁板綍 -->
+        <!-- 历史记录 -->
         <div class="quiz-history-section">
-          <div class="rds-title">鍘嗗彶娴嬭瘎璁板綍</div>
+          <div class="rds-title">历史测评记录</div>
           <div class="qh-table-wrap">
             <table class="qh-table">
               <thead>
                 <tr>
-                  <th>鏃ユ湡</th>
-                  <th>璧勬枡</th>
-                  <th>棰樻暟</th>
-                  <th>寰楀垎</th>
-                  <th>姝ｇ‘鐜?/th>
-                  <th>鐢ㄦ椂</th>
+                  <th>日期</th>
+                  <th>资料</th>
+                  <th>题数</th>
+                  <th>得分</th>
+                  <th>正确率</th>
+                  <th>用时</th>
                 </tr>
               </thead>
               <tbody id="qh-tbody">
-                <!-- JS 鍔ㄦ€佹覆鏌?-->
+                <!-- JS 动态渲染 -->
               </tbody>
             </table>
           </div>
           <div class="qh-empty" id="qh-empty" style="display:none;text-align:center;padding:32px;color:var(--text-muted);font-size:13px;">
-            鏆傛棤鍘嗗彶璁板綍锛屽畬鎴愮涓€娆℃祴璇曞悗灏嗘樉绀哄湪姝ゅ
+            暂无历史记录，完成第一次测试后将显示在此处
           </div>
         </div>
 
-        <!-- 鍐嶆潵涓€娆℃寜閽?-->
+        <!-- 再来一次按钮 -->
         <div class="result-footer">
           <button class="btn btn-primary btn-lg" id="btn-retry-quiz">
-            馃攧 鍐嶆祴涓€娆?          </button>
+            🔄 再测一次
+          </button>
         </div>
       </div>
     </section>
 
 
-    <!-- ===== 椤甸潰4: 杩涘害 ===== -->
+    <!-- ===== 页面4: 进度 ===== -->
     <section class="page page-progress" data-page="progress">
       <div class="page-header">
-        <h1 class="page-title">瀛︿範杩涘害</h1>
-        <p class="page-subtitle">杩借釜姣忎釜鐭ヨ瘑鐐圭殑鎺屾彙鎯呭喌</p>
+        <h1 class="page-title">学习进度</h1>
+        <p class="page-subtitle">追踪每个知识点的掌握情况</p>
       </div>
 
-      <!-- 鈺愨晲 鈶?椤舵帓缁熻鍗＄墖锛?涓級 鈺愨晲 -->
+      <!-- ══ ① 顶排统计卡片（5个） ══ -->
       <div class="pg-stats-row">
         <div class="pg-stat-card">
-          <div class="pg-stat-icon" style="background:rgba(59,130,246,0.1);color:#60a5fa;">馃搫</div>
+          <div class="pg-stat-icon" style="background:rgba(59,130,246,0.1);color:#60a5fa;">📄</div>
           <div class="pg-stat-value" id="pg-total-materials">0</div>
-          <div class="pg-stat-label">璧勬枡鎬绘暟</div>
+          <div class="pg-stat-label">资料总数</div>
         </div>
         <div class="pg-stat-card">
-          <div class="pg-stat-icon" style="background:rgba(34,197,94,0.1);color:#4ade80;">鉁?/div>
+          <div class="pg-stat-icon" style="background:rgba(34,197,94,0.1);color:#4ade80;">✓</div>
           <div class="pg-stat-value" id="pg-mastered">0</div>
-          <div class="pg-stat-label">宸叉帉鎻?/div>
+          <div class="pg-stat-label">已掌握</div>
         </div>
         <div class="pg-stat-card">
-          <div class="pg-stat-icon" style="background:rgba(168,85,247,0.1);color:#c084fc;">馃摑</div>
+          <div class="pg-stat-icon" style="background:rgba(168,85,247,0.1);color:#c084fc;">📝</div>
           <div class="pg-stat-value" id="pg-study-count">0</div>
-          <div class="pg-stat-label">瀛︿範娆℃暟</div>
+          <div class="pg-stat-label">学习次数</div>
         </div>
         <div class="pg-stat-card">
-          <div class="pg-stat-icon" style="background:rgba(201,162,39,0.15);color:var(--gold);">鈽?/div>
+          <div class="pg-stat-icon" style="background:rgba(201,162,39,0.15);color:var(--gold);">★</div>
           <div class="pg-stat-value" id="pg-avg-score">--</div>
-          <div class="pg-stat-label">骞冲潎鍒?/div>
+          <div class="pg-stat-label">平均分</div>
         </div>
         <div class="pg-stat-card">
-          <div class="pg-stat-icon" style="background:rgba(239,68,68,0.1);color:#f87171;">鈿?/div>
+          <div class="pg-stat-icon" style="background:rgba(239,68,68,0.1);color:#f87171;">⚠</div>
           <div class="pg-stat-value" id="pg-weak-count">0</div>
-          <div class="pg-stat-label">钖勫急鐐?/div>
+          <div class="pg-stat-label">薄弱点</div>
         </div>
       </div>
 
-      <!-- 鈺愨晲 鈶?闆疯揪鍥撅紙宸︼級+ 鐭ヨ瘑鐐瑰垪琛紙鍙筹級 鈺愨晲 -->
+      <!-- ══ ② 雷达图（左）+ 知识点列表（右） ══ -->
       <div class="pg-main-grid">
 
-        <!-- 宸︼細闆疯揪鍥?-->
+        <!-- 左：雷达图 -->
         <div class="pg-radar-section">
-          <div class="section-title">鐭ヨ瘑鐐规帉鎻″垎甯?/div>
+          <div class="section-title">知识点掌握分布</div>
           <div class="pg-radar-wrap">
             <svg id="pg-radar-svg" viewBox="0 0 320 320" class="pg-radar-svg">
-              <!-- JS 鍔ㄦ€佺粯鍒讹細鑳屾櫙缃戞牸 + 鏁版嵁澶氳竟褰?+ 杞寸嚎 + 鏍囩 -->
+              <!-- JS 动态绘制：背景网格 + 数据多边形 + 轴线 + 标签 -->
             </svg>
           </div>
           <div class="pg-radar-legend">
-            <!-- JS 娓叉煋鍥句緥 -->
+            <!-- JS 渲染图例 -->
           </div>
         </div>
 
-        <!-- 鍙筹細鐭ヨ瘑鐐硅繘搴﹀垪琛?-->
+        <!-- 右：知识点进度列表 -->
         <div class="pg-kp-list-section">
-          <div class="section-title">鍚勭淮搴﹁鎯?/div>
+          <div class="section-title">各维度详情</div>
           <div class="pg-kp-list" id="pg-kp-list">
-            <!-- JS 鍔ㄦ€佹覆鏌撶煡璇嗙偣琛?-->
+            <!-- JS 动态渲染知识点行 -->
           </div>
         </div>
 
       </div>
 
-      <!-- 鈺愨晲 鈶?姣忎唤璧勬枡璇︽儏锛堢瑪璁板尯锛?鈺愨晲 -->
+      <!-- ══ ③ 每份资料详情（笔记区） ══ -->
       <div class="pg-materials-section">
-        <div class="section-title">馃搵 璧勬枡瀛︿範璇︽儏</div>
+        <div class="section-title">📋 资料学习详情</div>
         <div class="pg-mat-list" id="pg-mat-list">
-          <!-- JS 鍔ㄦ€佹覆鏌撴瘡浠借祫鏂欑殑鍗＄墖+绗旇 -->
+          <!-- JS 动态渲染每份资料的卡片+笔记 -->
         </div>
       </div>
 
-      <!-- 鈺愨晲 鈶?钖勫急鐐瑰崟鐙垪鍑?鈺愨晲 -->
+      <!-- ══ ④ 薄弱点单独列出 ══ -->
       <div class="pg-weak-section" id="pg-weak-section" style="display:none;">
         <div class="section-title" style="color:var(--error);">
-          鈿?钖勫急鐭ヨ瘑鐐?          <span class="pg-weak-hint" id="pg-weak-hint"></span>
+          ⚠ 薄弱知识点
+          <span class="pg-weak-hint" id="pg-weak-hint"></span>
         </div>
         <div class="pg-weak-list" id="pg-weak-list">
-          <!-- JS 鍔ㄦ€佹覆鏌撹杽寮辩偣鍗＄墖 -->
+          <!-- JS 动态渲染薄弱点卡片 -->
         </div>
       </div>
     </section>
 
 
-    <!-- ===== 椤甸潰5: 鎶ュ憡锛堝涔犲懆鎶ョ敓鎴愬櫒锛?===== -->
+    <!-- ===== 页面5: 报告（学习周报生成器） ===== -->
     <section class="page page-report" data-page="report">
       <div class="page-header">
-        <h1 class="page-title">瀛︿範鍛ㄦ姤</h1>
-        <p class="page-subtitle">AI 鑷姩姹囨€诲涔犳暟鎹紝鐢熸垚涓€у寲鎶ュ憡</p>
+        <h1 class="page-title">学习周报</h1>
+        <p class="page-subtitle">AI 自动汇总学习数据，生成个性化报告</p>
       </div>
 
-      <!-- 鈺愨晲 鈶?鏃ユ湡鑼冨洿閫夋嫨 + 鐢熸垚鎸夐挳 鈺愨晲 -->
+      <!-- ══ ① 日期范围选择 + 生成按钮 ══ -->
       <div class="rp-control-bar">
         <div class="rp-date-group">
-          <!-- 蹇嵎閫夐」 -->
+          <!-- 快捷选项 -->
           <div class="rp-quick-dates">
-            <button class="rp-quick-btn active" data-range="week">鏈懆</button>
-            <button class="rp-quick-btn" data-range="month">鏈湀</button>
-            <button class="rp-quick-btn" data-range="all">鍏ㄩ儴</button>
+            <button class="rp-quick-btn active" data-range="week">本周</button>
+            <button class="rp-quick-btn" data-range="month">本月</button>
+            <button class="rp-quick-btn" data-range="all">全部</button>
           </div>
-          <!-- 鑷畾涔夋棩鏈?-->
+          <!-- 自定义日期 -->
           <div class="rp-custom-dates">
             <input type="date" id="rp-start-date" class="rp-date-input">
-            <span class="rp-date-sep">鑷?/span>
+            <span class="rp-date-sep">至</span>
             <input type="date" id="rp-end-date" class="rp-date-input">
           </div>
         </div>
         <button class="btn btn-primary btn-lg rp-gen-btn" id="btn-generate-report">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <span id="btn-gen-text">鐢熸垚鎶ュ憡</span>
+          <span id="btn-gen-text">生成报告</span>
         </button>
       </div>
 
-      <!-- 鈺愨晲 鈶?鎶ュ憡鍐呭灞曠ず鍖猴紙鐢熸垚鍚庢樉绀猴級 鈺愨晲 -->
+      <!-- ══ ② 报告内容展示区（生成后显示） ══ -->
       <div class="rp-output-area" id="rp-output-area" style="display:none;">
 
-        <!-- 鎶ュ憡澶撮儴淇℃伅 -->
+        <!-- 报告头部信息 -->
         <div class="rp-report-card">
           <div class="rp-card-header">
             <div class="rp-card-title-row">
-              <span class="rp-card-badge">AI 鐢熸垚</span>
-              <h2 class="rp-card-title" id="rp-title">瀛︿範鍛ㄦ姤</h2>
+              <span class="rp-card-badge">AI 生成</span>
+              <h2 class="rp-card-title" id="rp-title">学习周报</h2>
               <span class="rp-card-date" id="rp-display-range"></span>
             </div>
             <div class="rp-card-actions">
-              <button class="btn btn-secondary btn-sm" id="btn-download-report" title="涓嬭浇鎶ュ憡鏂囦欢">
+              <button class="btn btn-secondary btn-sm" id="btn-download-report" title="下载报告文件">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                涓嬭浇
+                下载
               </button>
-              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('rp-output-area').style.display='none'">鍏抽棴</button>
+              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('rp-output-area').style.display='none'">关闭</button>
             </div>
           </div>
 
-          <!-- 鎶ュ憡姝ｆ枃锛氬垎鍖烘帓鐗?-->
+          <!-- 报告正文：分区排版 -->
           <div class="rp-card-body" id="rp-card-body">
-            <!-- JS 鍔ㄦ€佹覆鏌擄細姒傝 / 瀛︿範鍐呭 / 钖勫急鍒嗘瀽 / 寤鸿 -->
+            <!-- JS 动态渲染：概览 / 学习内容 / 薄弱分析 / 建议 -->
           </div>
         </div>
 
       </div>
 
-      <!-- 鈺愨晲 鈶?鍘嗗彶鎶ュ憡鍒楄〃 鈺愨晲 -->
+      <!-- ══ ③ 历史报告列表 ══ -->
       <div class="rp-history-section">
-        <div class="section-title">鍘嗗彶鎶ュ憡</div>
+        <div class="section-title">历史报告</div>
         <div class="rp-history-list" id="rp-history-list">
-          <!-- JS 鍔ㄦ€佹覆鏌撳巻鍙叉姤鍛婂崱鐗?-->
+          <!-- JS 动态渲染历史报告卡片 -->
           <div class="rp-empty-hint" id="rp-empty-hint">
-            <p>杩樻病鏈夌敓鎴愯繃鎶ュ憡</p>
-            <p style="font-size:12px;color:var(--text-muted);margin-top:6px;">閫夋嫨鏃ユ湡鑼冨洿鍚庣偣鍑汇€岀敓鎴愭姤鍛娿€?/p>
+            <p>还没有生成过报告</p>
+            <p style="font-size:12px;color:var(--text-muted);margin-top:6px;">选择日期范围后点击「生成报告」</p>
           </div>
         </div>
       </div>
@@ -511,11 +519,11 @@
   </main><!-- /.main-content -->
 </div><!-- /.app-shell -->
 
-<!-- Toast 閫氱煡瀹瑰櫒 -->
+<!-- Toast 通知容器 -->
 <div class="toast-container" id="toast-container"></div>
 
 
-<!-- JS锛氭寜渚濊禆椤哄簭寮曞叆 -->
+<!-- JS：按依赖顺序引入 -->
 <script src="/static/api.js"></script>
 <script src="/static/materials.js"></script>
 <script src="/static/quiz.js"></script>
