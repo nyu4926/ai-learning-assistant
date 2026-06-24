@@ -1,4 +1,4 @@
-﻿"""Flask 应用入口 — app factory 模式"""
+"""Flask 应用入口 — app factory 模式"""
 
 import os
 import click
@@ -73,13 +73,23 @@ def create_app(config_name=None):
             db.create_all()
             click.echo("✔ 数据库表已创建")
 
-    # 确保 instance 目录存在（SQLite 需要）
+    # 确保 instance 目录存在并自动创建数据库表（首次部署无需手动 init-db）
     with app.app_context():
         instance_dir = os.path.join(app.root_path, "instance")
         os.makedirs(instance_dir, exist_ok=True)
 
-    return app
+        from models import (  # noqa: F401
+            Material,
+            ChatSession,
+            ChatMessage,
+            Quiz,
+            QuizAttempt,
+            KnowledgeProgress,
+            WeeklyReport,
+        )
+        db.create_all()
 
+    return app
 
 # 直接运行入口
 if __name__ == "__main__":
