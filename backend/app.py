@@ -1,9 +1,10 @@
-"""Flask åº”ç”¨å…¥å£ â€” app factory æ¨¡å¼"""
+"""Flask Ó¦ÓÃÈë¿Ú ¡ª app factory Ä£Ê½"""
 
 import os
+import time
 import click
 
-from flask import Flask, jsonify, render_template, send_from_directory
+from flask import Flask, jsonify, render_template, send_from_directory, request
 from flask_cors import CORS
 
 from config import config_map
@@ -11,7 +12,7 @@ from extensions import db
 
 
 def create_app(config_name=None):
-    """åˆ›å»º Flask åº”ç”¨å®ä¾‹"""
+    """´´½¨ Flask Ó¦ÓÃÊµÀı"""
 
     if config_name is None:
         config_name = os.getenv("FLASK_ENV", "development")
@@ -19,13 +20,13 @@ def create_app(config_name=None):
     app = Flask(__name__)
     app.config.from_object(config_map[config_name])
 
-    # CORS â€” å…è®¸å‰ç«¯å¼€å‘æœåŠ¡å™¨è·¨åŸŸè®¿é—®
+    # CORS ¡ª ÔÊĞíÇ°¶Ë¿ª·¢·şÎñÆ÷¿çÓò·ÃÎÊ
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-    # åˆå§‹åŒ–æ‰©å±•
+    # ³õÊ¼»¯À©Õ¹
     db.init_app(app)
 
-    # æ³¨å†Œè“å›¾
+    # ×¢²áÀ¶Í¼
     from routes.materials import materials_bp
     from routes.chat import chat_bp
     from routes.quiz import quiz_bp
@@ -38,46 +39,39 @@ def create_app(config_name=None):
     app.register_blueprint(progress_bp)
     app.register_blueprint(report_bp)
 
-    # å¥åº·æ£€æŸ¥æ¥å£
+    # ½¡¿µ¼ì²é½Ó¿Ú
     @app.route("/api/health", methods=["GET"])
     def health():
         return jsonify({"code": 0, "message": "ok", "data": {"status": "running"}})
 
-    # ========== å‰ç«¯é¡µé¢è·¯ç”± ==========
-
-    # è°ƒè¯•ï¼šæŸ¥çœ‹ç¯å¢ƒå˜é‡
-    @app.route("/api/debug", methods=["GET"])
-    def debug():
-        import os as _os
-        from pathlib import Path as _Path
-        env_path = _Path(__file__).resolve().parent / ".env"
-        return jsonify({
-            "LLM_API_KEY_exists": bool(_os.getenv("LLM_API_KEY")),
-            "LLM_API_KEY_len": len(_os.getenv("LLM_API_KEY", "")),
-            "LLM_API_KEY_prefix": _os.getenv("LLM_API_KEY", "")[:8] + "..." if _os.getenv("LLM_API_KEY") else "EMPTY",
-            "LLM_API_BASE": _os.getenv("LLM_API_BASE", "default"),
-            "FLASK_ENV": _os.getenv("FLASK_ENV", "not set"),
-            "dotenv_file_exists": env_path.exists(),
-            "dotenv_file_size": env_path.stat().st_size if env_path.exists() else 0,
-        })
+    # ========== Ç°¶ËÒ³ÃæÂ·ÓÉ ==========
 
     @app.route("/")
     def index():
-        """é¦–é¡µ"""
-        return render_template("index.html")
+        """Ê×Ò³ ¡ª Ã¿´Î¼ÓÔØÉú³ÉĞÂÊ±¼ä´Á£¬Ç¿ÖÆä¯ÀÀÆ÷»ñÈ¡×îĞÂ JS/CSS"""
+        return render_template("index.html", version=int(time.time()))
 
     @app.route("/static/<path:filename>")
     def static_files(filename):
-        """é™æ€æ–‡ä»¶ (JS/CSS)"""
+        """¾²Ì¬ÎÄ¼ş (JS/CSS)"""
         return send_from_directory("static", filename)
 
-    # ========== CLI å‘½ä»¤ ==========
+    # ½ûÖ¹¾²Ì¬ JS/CSS ÎÄ¼ş»º´æ
+    @app.after_request
+    def add_no_cache_headers(response):
+        if request.path.startswith("/static/"):
+            response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "0"
+        return response
+
+    # ========== CLI ÃüÁî ==========
 
     @app.cli.command("init-db")
     def init_db():
-        """åˆ›å»ºæ‰€æœ‰æ•°æ®åº“è¡¨"""
+        """´´½¨ËùÓĞÊı¾İ¿â±í"""
         with app.app_context():
-            from models import (  # noqa: F401
+            from models import (
                 Material,
                 ChatSession,
                 ChatMessage,
@@ -87,14 +81,14 @@ def create_app(config_name=None):
                 WeeklyReport,
             )
             db.create_all()
-            click.echo("âœ” æ•°æ®åº“è¡¨å·²åˆ›å»º")
+            click.echo("? Êı¾İ¿â±íÒÑ´´½¨")
 
-    # ç¡®ä¿ instance ç›®å½•å­˜åœ¨å¹¶è‡ªåŠ¨åˆ›å»ºæ•°æ®åº“è¡¨ï¼ˆé¦–æ¬¡éƒ¨ç½²æ— éœ€æ‰‹åŠ¨ init-dbï¼‰
+    # È·±£ instance Ä¿Â¼´æÔÚ²¢×Ô¶¯´´½¨Êı¾İ¿â±í£¨Ê×´Î²¿ÊğÎŞĞèÊÖ¶¯ init-db£©
     with app.app_context():
         instance_dir = os.path.join(app.root_path, "instance")
         os.makedirs(instance_dir, exist_ok=True)
 
-        from models import (  # noqa: F401
+        from models import (
             Material,
             ChatSession,
             ChatMessage,
@@ -107,7 +101,7 @@ def create_app(config_name=None):
 
     return app
 
-# ç›´æ¥è¿è¡Œå…¥å£
+# Ö±½ÓÔËĞĞÈë¿Ú
 if __name__ == "__main__":
     app = create_app()
     app.run(host="0.0.0.0", port=5000, debug=True)

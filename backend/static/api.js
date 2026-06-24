@@ -1,24 +1,20 @@
 /* ============================================
-   api.js — 后台请求封装
+   api.js �?后台请求封装
    ============================================ */
 
 const API = (() => {
-  // 后台基础地址（本地开发指向 Flask 5000 端口，部署时改为实际地址）
-  const BASE_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" ? "http://127.0.0.1:5000" : "https://ai-learning-assistant-production-33d4.up.railway.app";
+  // 后台基础地址（本地开发指�?Flask 5000 端口，部署时改为实际地址�?  const BASE_URL = window.location.origin;
 
   // 请求配置
   const DEFAULT_HEADERS = {
     'Content-Type': 'application/json',
-    // Authorization: `Bearer ${getToken()}`,  // V1 暂不做鉴权
-  };
+    // Authorization: `Bearer ${getToken()}`,  // V1 暂不做鉴�?  };
 
   /**
    * 核心请求方法
    * @param {string} method - GET / POST / PUT / DELETE
-   * @param {string} endpoint - 接口路径（不含前缀）
-   * @param {object|null} data - POST/PUT 的 body 数据
-   * @param {object} extraHeaders - 额外请求头
-   * @returns {Promise<any>}
+   * @param {string} endpoint - 接口路径（不含前缀�?   * @param {object|null} data - POST/PUT �?body 数据
+   * @param {object} extraHeaders - 额外请求�?   * @returns {Promise<any>}
    */
   async function request(method, endpoint, data = null, extraHeaders = {}) {
     const url = `${BASE_URL}${endpoint}`;
@@ -36,18 +32,18 @@ const API = (() => {
       const json = await res.json();
 
       if (!res.ok) {
-        console.error(`[API] ${method} ${endpoint} → ${res.status}`, json);
+        console.error(`[API] ${method} ${endpoint} �?${res.status}`, json);
         throw new ApiError(json.message || '请求失败', res.status, json);
       }
       return json;
     } catch (err) {
       if (err instanceof ApiError) throw err;
       console.error(`[API] 网络错误: ${method} ${endpoint}`, err);
-      throw new ApiError('网络连接失败，请检查后台是否启动', 0);
+      throw new ApiError('网络连接失败，请检查后台是否启�?, 0);
     }
   }
 
-  /** 自定义 API 错误类 */
+  /** 自定�?API 错误�?*/
   class ApiError extends Error {
     constructor(message, code, data) {
       super(message);
@@ -67,10 +63,9 @@ const API = (() => {
       if (tags) formData.append('tags', JSON.stringify(tags));
       return request('POST', '/api/materials/upload', null, {
         'Content-Type': 'multipart/form-data',
-        // 注意：浏览器会自动设置 multipart boundary，这里不能手动设 Content-Type
+        // 注意：浏览器会自动设�?multipart boundary，这里不能手动设 Content-Type
       }).then(() => {
-        // fetch 不支持直接发 FormData 并自定义 Content-Type，
-        // 所以用原生方式
+        // fetch 不支持直接发 FormData 并自定义 Content-Type�?        // 所以用原生方式
         return _uploadNative(file, tags);
       });
     },
@@ -106,7 +101,7 @@ const API = (() => {
           xhr.status >= 200 && xhr.status < 300 ? resolve(json) : reject(json);
         } catch (e) { reject({ message: '解析失败' }); }
       };
-      xhr.onerror = () => reject(new ApiError('上传失败：网络错误'));
+      xhr.onerror = () => reject(new ApiError('上传失败：网络错�?));
       xhr.send(fd);
     });
   }
@@ -115,7 +110,7 @@ const API = (() => {
   /* ==================== 对话模块 ==================== */
 
   const chat = {
-    /** 发送消息 */
+    /** 发送消�?*/
     send(message, materialIds, sessionId) {
       return request('POST', '/api/chat/send', {
         message,
@@ -186,7 +181,7 @@ const API = (() => {
     },
   };
 
-  /* ==================== 健康检查（状态灯） ==================== */
+  /* ==================== 健康检查（状态灯�?==================== */
 
   async function healthCheck() {
     try {
