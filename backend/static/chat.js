@@ -371,7 +371,7 @@ const Chat = (() => {
 
   window.Chat = window.Chat || {};
   /** 切换引用来源展开/收起（通过 onclick 全局调用） */
-  Chat.toggleSource = function(toggleEl) {
+  function toggleSource(toggleEl) {
     if (!toggleEl) return;
     toggleEl.classList.toggle('expanded');
     const body = toggleEl.nextElementSibling;
@@ -475,6 +475,6 @@ const Chat = (() => {
     init,
     newChat,
     selectMaterial,
-    toggleSource: Chat.toggleSource,
+    toggleSource: toggleSource,
   };
 })();
